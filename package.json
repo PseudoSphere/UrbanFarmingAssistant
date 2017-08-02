@@ -1,0 +1,16 @@
+{
+  "name": "ufa",
+  "version": "1.0.0",
+  "description": "assistant for urban farmers",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express":"*",
+    "tedious":"*",
+    "body-parser":"*"
+  },
+  "author": "Caleb Ferrell",
+  "license": "ISC"
+}
