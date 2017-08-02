@@ -1,11 +1,11 @@
 # UrbanFarmingAssistant
 My Epic Project
 
-Deployment
+Deployment  
 --add details--
 
-Config setup
+Config setup  
 --add details
 
-Client
+Client  
 Used for angular development, not needed for deployment
