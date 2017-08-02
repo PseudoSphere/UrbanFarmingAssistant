@@ -10,12 +10,7 @@ const dbHandler = require('./dbHandler');
 const app = express();
 
 // Port Number
-const port = 3000;
-
-/* Not sure if I'll need this
-// CORS Middleware
-app.use(cors());
-*/
+const port = 8080;
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -33,6 +28,9 @@ app.get('*', (req, res) => {
 app.post('/input', (req, res) => {
     data = req.body;
     console.log(data);
+    res.send({ message: "Our success is quite great" });
+    return;
+    
     if(data) {
         sqlKeys = 'INSERT INTO test Env(date';
         sqlValues = 'VALUES(GETDATE()';

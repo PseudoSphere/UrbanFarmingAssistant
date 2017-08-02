@@ -1,6 +1,9 @@
 # Sensitive files
 config
 
+# Angular Client (used for development, build to public)
+client
+
 # Logs
 logs
 *.log

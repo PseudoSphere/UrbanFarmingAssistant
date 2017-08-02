@@ -1,5 +1,8 @@
 // Tedious
-const tediousConfig = require("./config/tedious");
+
+// Required file. omitted from github because of sensetive information. Template available in ReadMe
+//const tediousConfig = require("./config/tedious");
+
 const tedious = require('tedious');
 const Connection = tedious.Connection;
 const Request = tedious.Request;

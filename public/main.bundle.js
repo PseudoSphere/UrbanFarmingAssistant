@@ -232,6 +232,9 @@ module.exports = "<div *ngFor=\"let animal of animals\">\n  {{animal.name}} <br/
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EntryformComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -243,8 +246,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
+
 var EntryformComponent = (function () {
-    function EntryformComponent() {
+    function EntryformComponent(http) {
+        this.http = http;
         this.animals = [
             { name: "Chickens", product: "Eggs", dbColumn: "chickenEggs" },
             { name: "Ducks", product: "Eggs", dbColumn: "duckEggs" },
@@ -255,16 +261,18 @@ var EntryformComponent = (function () {
     };
     // Send data to the database
     EntryformComponent.prototype.inputData = function () {
-        // request var
-        var request = "{";
+        var request = {};
         // Loop through each product
         this.animals.forEach(function (animal) {
-            if (animal.quantity) {
-                request += animal.dbColumn + ":" + animal.quantity + ",";
-            }
+            request[animal.dbColumn] = animal.quantity;
         });
-        request += "}";
         console.log(request);
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        var response = this.http.post('/input', request, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return console.log("Data", data); }, function (err) { return console.log("Error", err); }, function () { return console.log("WHAT IS HAPPENING"); });
     };
     return EntryformComponent;
 }());
@@ -274,9 +282,10 @@ EntryformComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/entryform/entryform.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/entryform/entryform.component.css")]
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _a || Object])
 ], EntryformComponent);
 
+var _a;
 //# sourceMappingURL=entryform.component.js.map
 
 /***/ }),
