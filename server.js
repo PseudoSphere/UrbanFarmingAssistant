@@ -10,7 +10,7 @@ const dbHandler = require('./dbHandler');
 const app = express();
 
 // Port Number
-const port = 8080;
+const port = 80;
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -18,41 +18,55 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Body Parser Middleware
 app.use(bodyParser.json());
 
+// Show Database Content
+app.get('/data/:timeFrame', (req, res) => {
+    let timeFrame = req.params.timeFrame;
+    let sql = 'SELECT date,\
+            SUM(chickenEggs) as chickenEggs, \
+            SUM(duckEggs) as duckEggs, \
+            SUM(goatMilk) as goatMilk \
+            FROM TestEnv \
+        WHERE date >= DATEADD(DAY, -' + timeFrame + ', GETDATE()) \
+        GROUP BY date \
+        ORDER BY date DESC \
+        FOR JSON AUTO;';
+    dbHandler.query(sql, (columns) => {
+        let rawTable = columns[0].value;
+        res.send(rawTable);
+    });
+});
 
-// --- Handle all get requests using angular ---
+// --- Handle get requests without options using Angular 4 ---
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 // Handle data input
 app.post('/input', (req, res) => {
-    data = req.body;
-    console.log(data);
-    res.send({ message: "Our success is quite great" });
-    return;
-    
-    if(data) {
-        sqlKeys = 'INSERT INTO test Env(date';
-        sqlValues = 'VALUES(GETDATE()';
-        if(data.chickenEggs) {
-            sqlKeys += ' , chickenEggs';
-            sqlValues += ' ,' + data.chickenEggs;
+    let validData = true;
+    let data = req.body;    
+
+    // Validate data (numbers only)
+    for(let element in data) {
+        /* check "number" to prevent text entries. check null data type which
+            is sent in the event of data entry, the deletion without refreshing */
+        if(typeof(data[element]) != "number" && data[element] != null) {
+            console.log("invalid data");
+            validData = false;
         }
-        if(data.duckEggs) {
-            sqlKeys += ' , duckEggs';
-            sqlValues += ' ,' + data.duckEggs;
-        }
-        if(data.goatMilk) {
-            sqlKeys += ' , goatMilk';
-            sqlValues += ' ,' + data.goatMilk;
-        }
-        sqlKeys += ') ';
-        sqlValues += ');';
-        sql = sqlKeys + sqlValues;
+    };
+
+    if(!validData) {
+        res.send({ message: "Invalid Data" });
+    } else {
+        sql = 'INSERT INTO TestEnv(date, chickenEggs, duckEggs, goatMilk) \
+            VALUES(GETDATE(), ' + 
+                (data.chickenEggs ? data.chickenEggs : 0) + ', ' + 
+                (data.duckEggs ? data.duckEggs : 0) + ', ' +
+                (data.goatMilk ? data.goatMilk : 0) + ');';
         dbHandler.simpleQuery(sql);
+        res.send({ message: "Data added succesfully"})
     }
-    
-    res.send("Post Request Received");
 });
 
 // Listen on Port

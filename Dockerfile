@@ -14,5 +14,5 @@ COPY config config
 COPY dbHandler.js .
 COPY server.js .
 
-EXPOSE 8080
+EXPOSE 80
 CMD [ "npm", "start" ]

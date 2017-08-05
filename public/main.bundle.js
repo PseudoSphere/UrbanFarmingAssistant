@@ -162,7 +162,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/data/data.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>Data</h1>"
+module.exports = "<table><tr>\r\n    <td><div class=\"input-group\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\">View </button>\r\n        </span>\r\n        <input type=\"number\" [(ngModel)]=\"timeFrame\" class=\"form-control\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\"> days </button>\r\n        </span>\r\n    </div></td>\r\n    <td></td>\r\n</tr></table>\r\n<hr>\r\n\r\n<div *ngIf=\"showTable\">\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Chicken Eggs</th>\r\n                <th class=\"text-center\">Duck Eggs</th>\r\n                <th class=\"text-center\">Goat Milk</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <tr *ngFor=\"let row of table\">\r\n                <td>{{ row.date }}</td>\r\n                <td>{{ row.chickenEggs }}</td>\r\n                <td>{{ row.duckEggs }}</td>\r\n                <td>{{ row.goatMilk }}</td>\r\n            </tr>\r\n        <tbody>    \r\n    </table>\r\n    <div *ngIf=\"!table\" class=\"alert alert-info\">\r\n            Loading Data...\r\n    </div>\r\n</div>"
 
 /***/ }),
 
@@ -171,6 +171,9 @@ module.exports = "<h1>Data</h1>"
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DataComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -182,10 +185,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
+
 var DataComponent = (function () {
-    function DataComponent() {
+    /*"Test Data"
+    data = [
+      {date: 0, chickenEggs: 1, duckEggs: 2, goatMilk: 3},
+      {date: 7, chickenEggs: 6, duckEggs: 5, goatMilk: 4},
+      {date: 8, chickenEggs: 9, duckEggs: 10, goatMilk: 11}
+      ];*/
+    function DataComponent(http) {
+        this.http = http;
+        this.timeFrame = 30;
+        this.showTable = false;
+        this.getData();
     }
     DataComponent.prototype.ngOnInit = function () {
+    };
+    DataComponent.prototype.getData = function () {
+        var _this = this;
+        this.showTable = true;
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        var response = this.http.get('/data/' + this.timeFrame, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return _this.table = data; }, function (err) { return console.log("Error", err); }, function () { return console.log("Data Recieved."); });
     };
     return DataComponent;
 }());
@@ -195,9 +221,10 @@ DataComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/data/data.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/data/data.component.css")]
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _a || Object])
 ], DataComponent);
 
+var _a;
 //# sourceMappingURL=data.component.js.map
 
 /***/ }),
@@ -223,7 +250,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/entryform/entryform.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngFor=\"let animal of animals\">\n  {{animal.name}} <br/>\n  <input type=\"number\" [(ngModel)]=\"animal.quantity\"> {{animal.product}} <br>\n  {{animal.quantity}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Submit\" (click)=\"inputData()\">"
+module.exports = "<div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\n  {{ dataInfo.message }}\n</div>\n\n<div *ngFor=\"let animal of animals\">\n  {{animal.name}} <br/>\n  <input type=\"number\" [(ngModel)]=\"animal.quantity\"> {{animal.product}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Submit\" (click)=\"inputData()\">"
 
 /***/ }),
 
@@ -256,23 +283,34 @@ var EntryformComponent = (function () {
             { name: "Ducks", product: "Eggs", dbColumn: "duckEggs" },
             { name: "Goats", product: "Milk", dbColumn: "goatMilk" }
         ];
+        this.dataInfo = {
+            show: false
+        };
     }
     EntryformComponent.prototype.ngOnInit = function () {
     };
-    // Send data to the database
+    // Send data to the server
     EntryformComponent.prototype.inputData = function () {
+        var _this = this;
+        // Keep user updated
+        this.dataInfo.show = true;
+        this.dataInfo.message = "Sending...";
+        // Create and send post request
         var request = {};
         // Loop through each product
         this.animals.forEach(function (animal) {
             request[animal.dbColumn] = animal.quantity;
         });
-        console.log(request);
+        // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         var response = this.http.post('/input', request, { headers: headers });
         response
             .map(function (n) { return n.json(); })
-            .subscribe(function (data) { return console.log("Data", data); }, function (err) { return console.log("Error", err); }, function () { return console.log("WHAT IS HAPPENING"); });
+            .subscribe(function (data) { return _this.dataInfo.message = data.message; }, function (err) { return console.log("Error", err); }, function () { return console.log("Data Transfer Complete"); });
+    };
+    EntryformComponent.prototype.hideMessage = function () {
+        this.dataInfo.show = false;
     };
     return EntryformComponent;
 }());
@@ -372,7 +410,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.name\"><br>\n  {{user.name}}\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  {{user.password}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Login\" (click)=\"login()\">"
+module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"hideMessage()\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.name\"><br>\n  {{user.name}}\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  {{user.password}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Login\" (click)=\"login()\">"
 
 /***/ }),
 
@@ -421,6 +459,9 @@ var LoginComponent = (function () {
             this.error.display = true;
         }
     };
+    LoginComponent.prototype.hideMessage = function () {
+        this.error.display = false;
+    };
     return LoginComponent;
 }());
 __decorate([
@@ -462,7 +503,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/navbar/navbar.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar navbar-default\">\n  <div class=\"container\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" [routerLink]=\"['/']\">Urban Farming Assistant</a>\n    </div>\n    <div id=\"navbar\" class=\"collapse navbar-collapse\">\n      <ul class=\"nav navbar-nav navbar-left\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/input']\">Input</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/data']\">Data</a></li>\n      </ul>\n\n      <!-- Show while logged in -->\n      <ul *ngIf=\"loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/profile']\">Username</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\" (click)=\"logout()\">Logout</a></li>\n      </ul>\n\n      <!-- Show while logged out -->\n      <ul *ngIf=\"!loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/register']\">Register</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\">Login</a></li>\n      </ul>\n    </div><!--/.nav-collapse -->\n  </div>\n</nav>"
+module.exports = "<nav class=\"navbar navbar-default\">\n  <div class=\"container\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" [routerLink]=\"['/']\">Urban Farming Assistant</a>\n    </div>\n    <div id=\"navbar\" class=\"collapse navbar-collapse\">\n      <ul class=\"nav navbar-nav navbar-left\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/input']\">Input</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/data']\">Data</a></li>\n      </ul>\n\n      <!-- Show while logged in -->\n      <ul *ngIf=\"loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/profile']\">Username</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\" (click)=\"logout()\">Logout</a></li>\n      </ul>\n\n      <!-- Show while logged out -->\n      <ul *ngIf=\"!loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/register']\">Register</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\">Login</a></li>\n      </ul>\n    </div><!--/.nav-collapse -->\n  </div>"
 
 /***/ }),
 

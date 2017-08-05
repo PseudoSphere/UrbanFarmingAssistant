@@ -1,8 +1,8 @@
 # Sensitive files
-config
+/config
 
 # Angular Client (used for development, build to public)
-client
+/client
 
 # Logs
 logs
