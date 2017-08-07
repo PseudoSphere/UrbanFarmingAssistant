@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express":"*",
-    "tedious":"*",
-    "body-parser":"*"
+    "bcryptjs": "^2.4.3",
+    "body-parser": "*",
+    "express": "*",
+    "jsonwebtoken": "^7.4.2",
+    "tedious": "*"
   },
   "author": "Caleb Ferrell",
   "license": "ISC"

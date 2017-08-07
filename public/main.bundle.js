@@ -188,12 +188,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var DataComponent = (function () {
-    /*"Test Data"
-    data = [
-      {date: 0, chickenEggs: 1, duckEggs: 2, goatMilk: 3},
-      {date: 7, chickenEggs: 6, duckEggs: 5, goatMilk: 4},
-      {date: 8, chickenEggs: 9, duckEggs: 10, goatMilk: 11}
-      ];*/
     function DataComponent(http) {
         this.http = http;
         this.timeFrame = 30;
@@ -336,7 +330,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".thumbnail {\r\n    position: relative;\r\n    border: 0;\r\n}\r\n\r\n.caption {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n}", ""]);
 
 // exports
 
@@ -349,7 +343,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>Home Page</h1>\n"
+module.exports = "<div class=\"text-center\">\n    <div class=\"thumbnail text-center\">\n        <img src=\"http://lorempixel.com/600/100/abstract/\"\n            class=\"img-responsive img-rounded center-block\">\n        <div class=\"caption\">\n            <h1>Urban Farming Assistant</h1>\n        </div>\n    </div>\n\n    <p>\n        Take Urban Farming to the next level.\n    </p>\n</div>"
 
 /***/ }),
 
@@ -410,7 +404,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"hideMessage()\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.name\"><br>\n  {{user.name}}\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  {{user.password}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Login\" (click)=\"login()\">"
+module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"hideMessage()\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" value=\"Login\" (click)=\"login()\">"
 
 /***/ }),
 
@@ -420,7 +414,10 @@ module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (cl
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/@angular/router.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__navbar_navbar_component__ = __webpack_require__("../../../../../src/app/components/navbar/navbar.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__ = __webpack_require__("../../../../../src/app/components/navbar/navbar.component.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LoginComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -434,30 +431,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
 var LoginComponent = (function () {
-    function LoginComponent(router) {
+    function LoginComponent(router, http) {
         this.router = router;
+        this.http = http;
         this.user = {
-            name: "",
+            username: "",
             password: ""
         };
         this.error = {
-            message: "Incorrect Username or Password."
+            message: ""
         };
     }
     LoginComponent.prototype.ngOnInit = function () {
     };
     LoginComponent.prototype.login = function () {
-        console.log("Username: " + this.user.name +
+        console.log("Username: " + this.user.username +
             ", Password: " + this.user.password);
-        // Placeholder validation
-        if (this.user.password == "password") {
-            console.log(this.navbar);
-            this.router.navigate(['/']);
-        }
-        else {
-            this.error.display = true;
-        }
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        var response = this.http.post('/login', this.user, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return console.log(data); }, function (err) { return console.log("Error", err); }, function () { return console.log("Data Transfer Complete"); });
     };
     LoginComponent.prototype.hideMessage = function () {
         this.error.display = false;
@@ -465,8 +464,8 @@ var LoginComponent = (function () {
     return LoginComponent;
 }());
 __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_15" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2__navbar_navbar_component__["a" /* NavbarComponent */]),
-    __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__navbar_navbar_component__["a" /* NavbarComponent */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__navbar_navbar_component__["a" /* NavbarComponent */]) === "function" && _a || Object)
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_15" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__["a" /* NavbarComponent */]),
+    __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__["a" /* NavbarComponent */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__["a" /* NavbarComponent */]) === "function" && _a || Object)
 ], LoginComponent.prototype, "navbar", void 0);
 LoginComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* Component */])({
@@ -474,10 +473,10 @@ LoginComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/login/login.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/login/login.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === "function" && _c || Object])
 ], LoginComponent);
 
-var _a, _b;
+var _a, _b, _c;
 //# sourceMappingURL=login.component.js.map
 
 /***/ }),
@@ -572,7 +571,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  <h3>Create New Account</h3>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.name\"><br>\n  {{user.name}}\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  {{user.password}}\n  <hr>\n</div>\n<input type=\"button\" value=\"Register\" (click)=\"register()\">"
+module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  <h3>Create New Account</h3>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" value=\"Register\" (click)=\"register()\">"
 
 /***/ }),
 
@@ -582,6 +581,9 @@ module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\">\n 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/@angular/router.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RegisterComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -594,11 +596,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
+
 var RegisterComponent = (function () {
-    function RegisterComponent(router) {
+    function RegisterComponent(router, http) {
         this.router = router;
+        this.http = http;
         this.user = {
-            name: "",
+            username: "",
             password: ""
         };
         this.error = {
@@ -608,15 +613,24 @@ var RegisterComponent = (function () {
     RegisterComponent.prototype.ngOnInit = function () {
     };
     RegisterComponent.prototype.register = function () {
-        console.log("Username: " + this.user.name +
+        console.log("Username: " + this.user.username +
             ", Password: " + this.user.password);
+        console.log(this.user);
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        var response = this.http.post('/register', this.user, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return console.log(data); }, function (err) { return console.log("Error", err); }, function () { return console.log("Data Transfer Complete"); });
+        /*
         // Placeholder password validation
-        if (this.user.password == "password") {
-            this.router.navigate(['/']);
+        if(this.user.password == "password") {
+          this.router.navigate(['/']);
         }
         else {
-            this.error.display = true;
-        }
+          this.error.display = true;
+        }*/
     };
     return RegisterComponent;
 }());
@@ -626,10 +640,10 @@ RegisterComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/register/register.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/register/register.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === "function" && _b || Object])
 ], RegisterComponent);
 
-var _a;
+var _a, _b;
 //# sourceMappingURL=register.component.js.map
 
 /***/ }),

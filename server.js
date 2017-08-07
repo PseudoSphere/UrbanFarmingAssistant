@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // ---DB---
 const dbHandler = require('./dbHandler');
@@ -39,6 +41,76 @@ app.get('/data/:timeFrame', (req, res) => {
 // --- Handle get requests without options using Angular 4 ---
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
+// provide token on login
+app.post('/login', (req, res) => {
+    if(!req.body.username || !req.body.password) {
+        res.status = 400;
+        res.send({message:"Username and Password Required."});
+    }
+    let user = {
+        username: req.body.username,
+        password: req.body.password
+    }
+    let sql = "SELECT username, password FROM Users WHERE \
+        username = '" + user.username + "' \
+        FOR JSON AUTO;";
+    dbHandler.query(sql, 
+    // Call back if any rows are returned
+        (columns) => {
+            rawData = columns[0].value;
+            data = JSON.parse(rawData);
+            bcrypt.compare(user.password, data[0].password, (err, response) => {
+                console.log("compare: ", response);
+            });
+            //---SEND TOKEN---
+        // Callback needed to check for 0 rows returned
+        }, (err, rowCount, rows) => {
+            if(rowCount < 1) {
+                res.statusCode = 401;
+                res.send({message: "Username does not exists"});
+            }
+        }
+    )
+})
+
+// Register User
+app.post('/register', (req, res) => {
+    // Salt and Hash password
+    let hash = bcrypt.hashSync(req.body.password, 10);
+
+    // New user to add to DB
+    let newUser =  {
+        username: req.body.username,
+        password: hash
+    }
+
+    // Insert user (check for pre-existing)
+    sql = "INSERT INTO Users (username, password) VALUES \
+        ('" + newUser.username + "', '" + newUser.password + "');";
+
+    dbHandler.query(sql, ()=>{}, (err, rowCount, rows) => {
+        // Error number 2627 indicates duplicate key
+        if(err && err.number == 2627) {
+            res.statusCode = 409;
+            res.send({message: 'Username already exists.'})
+        } else {
+            const token = jwt.sign({
+                    username:req.body.username
+                }, hash);
+
+            res.send({message: 'User successfully created', token});
+        }
+    })
+/*
+    let decoded = jwt.verify(token, hash);
+    console.log("decoded: ", decoded)
+
+    bcrypt.compare(req.body.password, hash, function(err, response) {
+        console.log("compare: ", response);
+    });
+*/
 });
 
 // Handle data input

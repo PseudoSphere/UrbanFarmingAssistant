@@ -5,18 +5,23 @@ const tedious = require('tedious');
 const Connection = tedious.Connection;
 const Request = tedious.Request;
 
-module.exports.query = (sql, callback) => {
+module.exports.query = (sql, callback, requestCallback) => {
     // Form request
     let request = new Request(sql, function(err, rowCount, rows) {
             console.log('error: ' + err);
             console.log(rowCount + ' row(s) returned');
+            if(requestCallback) {
+                requestCallback(err, rowCount, rows);
+            }
+            connection.close();
         }
     );
     request.on('row', callback);
+    /*
     request.on('done', function (rowCount, more, rows) { 
         if(!more) {
             //console.log('connection close 1');
-            connection.close();
+            //connection.close();
         }
     });
     /*
