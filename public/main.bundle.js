@@ -86,6 +86,7 @@ AppComponent = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_register_register_component__ = __webpack_require__("../../../../../src/app/components/register/register.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__ = __webpack_require__("../../../../../src/app/components/profile/profile.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__ = __webpack_require__("../../../../../src/app/globals/user-control.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__globals_ccp_service__ = __webpack_require__("../../../../../src/app/globals/ccp.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -108,15 +109,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-//Globals
+// Globals
 
+
+// Routs
 var appRoutes = [
     { path: '', component: __WEBPACK_IMPORTED_MODULE_10__components_home_home_component__["a" /* HomeComponent */] },
     { path: 'login', component: __WEBPACK_IMPORTED_MODULE_8__components_login_login_component__["a" /* LoginComponent */] },
     { path: 'register', component: __WEBPACK_IMPORTED_MODULE_11__components_register_register_component__["a" /* RegisterComponent */] },
-    { path: 'input', component: __WEBPACK_IMPORTED_MODULE_7__components_entryform_entryform_component__["a" /* EntryformComponent */] },
-    { path: 'data', component: __WEBPACK_IMPORTED_MODULE_9__components_data_data_component__["a" /* DataComponent */] },
-    { path: 'profile', component: __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__["a" /* ProfileComponent */] }
+    { path: 'input', component: __WEBPACK_IMPORTED_MODULE_7__components_entryform_entryform_component__["a" /* EntryformComponent */], },
+    { path: 'data', component: __WEBPACK_IMPORTED_MODULE_9__components_data_data_component__["a" /* DataComponent */], },
+    { path: 'profile', component: __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__["a" /* ProfileComponent */], }
 ];
 var AppModule = (function () {
     function AppModule() {
@@ -141,7 +144,7 @@ AppModule = __decorate([
             __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* HttpModule */],
             __WEBPACK_IMPORTED_MODULE_4__angular_router__["a" /* RouterModule */].forRoot(appRoutes)
         ],
-        providers: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]],
+        providers: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */], __WEBPACK_IMPORTED_MODULE_14__globals_ccp_service__["a" /* CCPService */]],
         bootstrap: [__WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */]]
     })
 ], AppModule);
@@ -209,7 +212,7 @@ var DataComponent = (function () {
         var _this = this;
         this.showTable = true;
         // HTTP request
-        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         var response = this.http.get('/data/' + this.timeFrame, { headers: headers });
         response
@@ -224,7 +227,7 @@ DataComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/data/data.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/data/data.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _a || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object])
 ], DataComponent);
 
 var _a;
@@ -253,7 +256,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/entryform/entryform.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\n  {{ dataInfo.message }}\n</div>\n\n<div *ngFor=\"let animal of animals\">\n  {{animal.name}} <br/>\n  <input type=\"number\" [(ngModel)]=\"animal.quantity\"> {{animal.product}}\n  <hr>\n</div>\n<input type=\"button\" class=\"btn\" value=\"Submit\" (click)=\"inputData()\">"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\n    {{ dataInfo.message }}\n  </div>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Date</span>\n    <input type=\"date\" [(ngModel)]=\"inputDate\" class=\"form-control\">\n  </div>\n  <hr>\n  <div *ngFor=\"let animal of animals\">\n    <div class=\"input-group\">\n      <span class=\"input-group-addon\">{{animal.name}}</span>\n      <input type=\"number\" [(ngModel)]=\"animal.quantity\" class=\"form-control\"> \n      <span class=\"input-group-addon\">{{animal.product}}</span>\n    </div>\n    <hr>\n  </div>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Submit\" (click)=\"inputData()\">\n</div>"
 
 /***/ }),
 
@@ -265,6 +268,7 @@ module.exports = "<div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__globals_user_control_service__ = __webpack_require__("../../../../../src/app/globals/user-control.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EntryformComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -278,9 +282,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+// Globals
+
 var EntryformComponent = (function () {
-    function EntryformComponent(http) {
+    function EntryformComponent(http, userControl) {
         this.http = http;
+        this.userControl = userControl;
+        // Complicated thing to get the date because dates are bleh :P
+        this.inputDate = new Date().toISOString().split('T')[0];
         this.animals = [
             { name: "Chickens", product: "Eggs", dbColumn: "chickenEggs" },
             { name: "Ducks", product: "Eggs", dbColumn: "duckEggs" },
@@ -299,13 +308,17 @@ var EntryformComponent = (function () {
         this.dataInfo.show = true;
         this.dataInfo.message = "Sending...";
         // Create and send post request
-        var request = {};
+        var request = {
+            token: this.userControl.token,
+            date: this.inputDate,
+            username: this.userControl.username
+        };
         // Loop through each product
         this.animals.forEach(function (animal) {
             request[animal.dbColumn] = animal.quantity;
         });
         // HTTP request
-        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         var response = this.http.post('/input', request, { headers: headers });
         response
@@ -323,10 +336,10 @@ EntryformComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/entryform/entryform.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/entryform/entryform.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]) === "function" && _a || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__globals_user_control_service__["a" /* UserControlService */]) === "function" && _b || Object])
 ], EntryformComponent);
 
-var _a;
+var _a, _b;
 //# sourceMappingURL=entryform.component.js.map
 
 /***/ }),
@@ -352,7 +365,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"text-center\">\n    <div class=\"thumbnail text-center\">\n        <img [src]=\"image\"\n            class=\"img-responsive img-rounded center-block\">\n    </div>\n\n    <p>\n        Take Urban Farming to the next level.\n    </p>\n</div>"
+module.exports = "<div class=\"text-center\">\n    <img src=\"/farm.jpg\" width=\"500\"\n        class=\"img-responsive img-rounded center-block\">\n\n    <p>\n        Take Urban Farming to the next level.\n    </p>\n</div>"
 
 /***/ }),
 
@@ -361,6 +374,7 @@ module.exports = "<div class=\"text-center\">\n    <div class=\"thumbnail text-c
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals_ccp_service__ = __webpack_require__("../../../../../src/app/globals/ccp.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomeComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -372,10 +386,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+// Globals
+
 var HomeComponent = (function () {
-    function HomeComponent() {
-        localStorage.setItem('homage', 'http://lorempixel.com/600/100/abstract/');
-        this.image = localStorage.getItem('homage');
+    function HomeComponent(ccp) {
+        this.ccp = ccp;
     }
     HomeComponent.prototype.ngOnInit = function () {
     };
@@ -387,9 +402,10 @@ HomeComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/home/home.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/home/home.component.css")]
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__globals_ccp_service__["a" /* CCPService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__globals_ccp_service__["a" /* CCPService */]) === "function" && _a || Object])
 ], HomeComponent);
 
+var _a;
 //# sourceMappingURL=home.component.js.map
 
 /***/ }),
@@ -443,7 +459,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-//Globals
+// Globals
 
 var LoginComponent = (function () {
     function LoginComponent(router, http, userControl) {
@@ -463,7 +479,7 @@ var LoginComponent = (function () {
     LoginComponent.prototype.login = function () {
         var _this = this;
         // HTTP request
-        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Headers */]();
+        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         var response = this.http.post('/login', this.user, { headers: headers });
         response
@@ -485,7 +501,12 @@ var LoginComponent = (function () {
     };
     // Handle response with error
     LoginComponent.prototype.httpErrResponse = function (err) {
-        this.error.message = err.statusText;
+        if (err.statusCode == 404) {
+            this.error.message = "Unable to reach server.";
+        }
+        else {
+            this.error.message = err.statusText;
+        }
         this.error.display = true;
     };
     return LoginComponent;
@@ -496,7 +517,7 @@ LoginComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/login/login.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/login/login.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */]) === "function" && _c || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */]) === "function" && _c || Object])
 ], LoginComponent);
 
 var _a, _b, _c;
@@ -700,7 +721,7 @@ var RegisterComponent = (function () {
     RegisterComponent.prototype.register = function () {
         var _this = this;
         // HTTP request
-        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Headers */]();
+        var headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         var response = this.http.post('/register', this.user, { headers: headers });
         response
@@ -722,7 +743,12 @@ var RegisterComponent = (function () {
     };
     // Handle response with error
     RegisterComponent.prototype.httpErrResponse = function (err) {
-        this.error.message = err.statusText;
+        if (err.statusCode == 404) {
+            this.error.message = "Unable to reach server.";
+        }
+        else {
+            this.error.message = err.statusText;
+        }
         this.error.display = true;
     };
     return RegisterComponent;
@@ -733,11 +759,48 @@ RegisterComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/register/register.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/register/register.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */]) === "function" && _c || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */]) === "function" && _c || Object])
 ], RegisterComponent);
 
 var _a, _b, _c;
 //# sourceMappingURL=register.component.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/globals/ccp.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CCPService; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+var CCPService = (function () {
+    function CCPService(http) {
+        this.http = http;
+    }
+    return CCPService;
+}());
+CCPService = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["c" /* Injectable */])(),
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object])
+], CCPService);
+
+var _a;
+//# sourceMappingURL=ccp.service.js.map
 
 /***/ }),
 
@@ -746,6 +809,7 @@ var _a, _b, _c;
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/@angular/router.es5.js");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserControlService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -757,8 +821,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var UserControlService = (function () {
-    function UserControlService() {
+    function UserControlService(router) {
+        this.router = router;
         this.loggedIn = false;
     }
     UserControlService.prototype.logout = function () {
@@ -766,13 +832,23 @@ var UserControlService = (function () {
         this.username = null;
         this.loggedIn = false;
     };
+    UserControlService.prototype.canActivate = function () {
+        if (this.loggedIn) {
+            return true;
+        }
+        else {
+            this.router.navigate(['/login']);
+            return false;
+        }
+    };
     return UserControlService;
 }());
 UserControlService = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["c" /* Injectable */])(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]) === "function" && _a || Object])
 ], UserControlService);
 
+var _a;
 //# sourceMappingURL=user-control.service.js.map
 
 /***/ }),

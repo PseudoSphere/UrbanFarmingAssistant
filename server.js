@@ -20,6 +20,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Body Parser Middleware
 app.use(bodyParser.json());
 
+// Homepage Image
+app.get('/farm.jpg', (req, res) => {
+    res.sendFile(path.join(__dirname,'./publicAssets/farm.jpg'));
+})
+
 // Show Database Content
 app.get('/data/:timeFrame', (req, res) => {
     let timeFrame = req.params.timeFrame;
@@ -130,7 +135,7 @@ app.post('/register', (req, res) => {
             }, hash);
 
             resData = {
-                    username: user.username,
+                    username: newUser.username,
                     message:  "User successfully registered.",
                     success: true,
                     token
@@ -139,35 +144,44 @@ app.post('/register', (req, res) => {
                 res.send(resData);
         }
     })
-/*
-    let decoded = jwt.verify(token, hash);
-    console.log("decoded: ", decoded)
-*/
 });
 
 // Handle data input
-app.post('/input', (req, res) => {
+app.post('/input', queryValidate, (req, res) => {
     let validData = true;
-    let data = req.body;    
+    let data = req.body;
 
-    // Validate data (numbers only)
-    for(let element in data) {
-        /* check "number" to prevent text entries. check null data type which
-            is sent in the event of data entry, the deletion without refreshing */
-        if(typeof(data[element]) != "number" && data[element] != null) {
-            console.log("invalid data");
-            validData = false;
-        }
-    };
+    // ---Validate data (Hacky validation until refactored DB)---
+    // Parsing a valid date returns a number, invalid dates turn NaN
+    if(!data.date || !typeof(Date.parse(data.date))=='number') {
+        validData = false;
+    }
+    // username
+    if(!data.username || !typeof(data.username)=='string') {
+        validData = false;
+    }
+    // chickenEggs
+    if(!data.chickenEggs == null && !typeof(data.chickenEggs)=='number') {
+        validData = false;
+    }
+    // duckEggs
+    if(!data.duckEggs == null && !typeof(data.duckEggs)=='number') {
+        validData = false;
+    }
+    // goatMilk
+    if(!data.goatMilk == null && !typeof(data.goatMilk)=='number') {
+        validData = false;
+    }
+    
 
     if(!validData) {
         res.send({ message: "Invalid Data" });
     } else {
-        sql = 'INSERT INTO TestEnv(date, chickenEggs, duckEggs, goatMilk) \
-            VALUES(GETDATE(), ' + 
-                (data.chickenEggs ? data.chickenEggs : 0) + ', ' + 
-                (data.duckEggs ? data.duckEggs : 0) + ', ' +
-                (data.goatMilk ? data.goatMilk : 0) + ');';
+        sql = "INSERT INTO TestEnv(date, username, chickenEggs, duckEggs, goatMilk) \
+            VALUES('" + data.date + "', '" + data.username + "', " +
+                (data.chickenEggs ? data.chickenEggs : 0) + ", " + 
+                (data.duckEggs ? data.duckEggs : 0) + ", " +
+                (data.goatMilk ? data.goatMilk : 0) + ");";
         dbHandler.simpleQuery(sql);
         res.send({ message: "Data added succesfully"})
     }
@@ -177,3 +191,29 @@ app.post('/input', (req, res) => {
 app.listen(port, () => {
   console.log('Server started on port '+ port + "...");
 });
+
+function queryValidate(req, res, next) {
+    let sql = "SELECT password FROM Users WHERE username = '" 
+        + req.body.username + 
+        "' FOR JSON AUTO;";
+    dbHandler.betterQuery(sql, (err, rowCount, rows) => {
+        if(rowCount < 1) { 
+            res.statusCode = 401;
+            res.send();
+            return;
+        }
+        // rows[0][0].value = array of returned objects
+        data = JSON.parse(rows[0][0].value);
+        password = data[0].password;
+        
+        // Authenticate
+        let decoded = jwt.verify(req.body.token, password);
+        console.log("decoded: ", decoded)
+        if(decoded.username == req.body.username) {
+            next();
+        } else {
+            res.statusCode = 401;
+            res.send();
+        }
+    })
+}
