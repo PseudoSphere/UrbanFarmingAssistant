@@ -46,8 +46,10 @@ app.get('*', (req, res) => {
 // provide token on login
 app.post('/login', (req, res) => {
     if(!req.body.username || !req.body.password) {
-        res.status = 400;
-        res.send({message:"Username and Password Required."});
+        res.statusCode = 400;
+        res.statusMessage = "Username and Password Required.";
+        res.send();
+        return;
     }
     let user = {
         username: req.body.username,
@@ -62,14 +64,33 @@ app.post('/login', (req, res) => {
             rawData = columns[0].value;
             data = JSON.parse(rawData);
             bcrypt.compare(user.password, data[0].password, (err, response) => {
-                console.log("compare: ", response);
+                if(response) {
+                    // --If true, send token and message, and status, and username--
+                    // Token 
+                    const token = jwt.sign({
+                        username:req.body.username
+                    }, data[0].password);
+
+                    resData = {
+                        username: user.username,
+                        message:  "Successfully logged in.",
+                        success: true,
+                        token
+                    }
+
+                    res.send(resData);
+                } else { // password does not compare
+                    res.statusCode = 401;
+                    res.statusMessage = "Invalid password";
+                    res.send();
+                }  
             });
-            //---SEND TOKEN---
-        // Callback needed to check for 0 rows returned
+        // Callback needed to check for 0 rows returned (aka no user found)
         }, (err, rowCount, rows) => {
             if(rowCount < 1) {
                 res.statusCode = 401;
-                res.send({message: "Username does not exists"});
+                res.statusMessage = "Username does not exists";
+                res.send();
             }
         }
     )
@@ -77,6 +98,13 @@ app.post('/login', (req, res) => {
 
 // Register User
 app.post('/register', (req, res) => {
+    if(!req.body.username || !req.body.password) {
+        res.statusCode = 400;
+        res.statusMessage = "Username and Password Required.";
+        res.send();
+        return;
+    }
+
     // Salt and Hash password
     let hash = bcrypt.hashSync(req.body.password, 10);
 
@@ -94,22 +122,26 @@ app.post('/register', (req, res) => {
         // Error number 2627 indicates duplicate key
         if(err && err.number == 2627) {
             res.statusCode = 409;
-            res.send({message: 'Username already exists.'})
+            res.statusMessage = 'Username already exists.';
+            res.send()
         } else {
             const token = jwt.sign({
-                    username:req.body.username
-                }, hash);
+                username:req.body.username
+            }, hash);
 
-            res.send({message: 'User successfully created', token});
+            resData = {
+                    username: user.username,
+                    message:  "User successfully registered.",
+                    success: true,
+                    token
+                }
+
+                res.send(resData);
         }
     })
 /*
     let decoded = jwt.verify(token, hash);
     console.log("decoded: ", decoded)
-
-    bcrypt.compare(req.body.password, hash, function(err, response) {
-        console.log("compare: ", response);
-    });
 */
 });
 
