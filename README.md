@@ -4,7 +4,8 @@ Deployment
 2. node server.js (or npm start or nodemon)
 
 Config setup  
-```module.exports = {
+```
+module.exports = {
     userName:   <database username>,
     password:   <database password>,
     server:     '<azure server>.database.windows.net',
