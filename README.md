@@ -13,7 +13,9 @@ Config setup
         encrypt:    true,
         rowCollectionOnRequestCompletion: true
   }
-}```
+}
+```
+
 
 Client  
 can be found at https://github.com/PseudoSphere/UFAClient
