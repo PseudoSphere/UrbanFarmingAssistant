@@ -29,19 +29,29 @@ app.get('/farm.jpg', (req, res) => {
 app.get('/data/:username/:timeFrame', queryValidate, (req, res) => {
     let username = req.validated.username;
     let timeFrame = req.params.timeFrame;
-    let sql = "SELECT * FROM TestEnv \
+    let sql = "BEGIN \
+        SELECT * FROM TestEnv \
         WHERE date >= DATEADD(DAY, -" + timeFrame + ", GETDATE()) \
         AND username = '" + username + "' \
         ORDER BY date DESC \
-        FOR JSON AUTO;";
+        FOR JSON AUTO; \
+        SELECT * FROM Feed \
+        WHERE date >= DATEADD(DAY, -" + timeFrame + ", GETDATE()) \
+        AND username = '" + username + "' \
+        ORDER BY date DESC \
+        FOR JSON AUTO; \
+        END";
+    
     dbHandler.betterQuery(sql, (err, rowCount, rows) => {
         if(rowCount < 1) {
             res.send({dataExists: false});
             return;
         }
-        // rows[0][0].value = array of returned objects
-        table = rows[0][0].value;
-        res.send({dataExists: true, table});
+        // rows[0][0].value = first array of returned objects
+        let table = rows[0][0].value;
+        // rows[1][0].value = second array of returned objects
+        let feedTable = rows[1][0].value;
+        res.send({dataExists: true, table, feedTable});
     });
 });
 
@@ -156,11 +166,23 @@ app.post('/input', queryValidate, (req, res) => {
     if(!validData) {
         res.send({ message: "Invalid Data" });
     } else {
-        sql = "INSERT INTO TestEnv(date, username, chickenEggs, duckEggs, goatMilk) \
-            VALUES('" + data.date + "', '" + req.validated.username + "', " +
-                (data.chickenEggs ? data.chickenEggs : 0) + ", " + 
-                (data.duckEggs ? data.duckEggs : 0) + ", " +
-                (data.goatMilk ? data.goatMilk : 0) + ");";
+        let date = data.date;
+        let username = req.validated.username;
+        let sql = "BEGIN";
+        if(data.chickenEggs || data.duckEggs || data.goatMilk) {
+            sql += " INSERT INTO TestEnv(date, username, chickenEggs, duckEggs, goatMilk) \
+                VALUES('" + date + "', '" + username + "', " +
+                    (data.chickenEggs ? data.chickenEggs : 0) + ", " + 
+                    (data.duckEggs ? data.duckEggs : 0) + ", " +
+                    (data.goatMilk ? data.goatMilk : 0) + ");"
+        }
+        // feedValues = [{feedType, cost}, {...},...]
+        data.feedValues.forEach(element => {
+            sql += " INSERT INTO Feed(date, username, feedType, cost) \
+            VALUES('" + date + "', '" + username + "','" +
+            element.feedType + "', " + element.cost + ");";
+        });
+        sql += " END";
         dbHandler.simpleQuery(sql);
         res.send({ message: "Data added succesfully"})
     }
@@ -170,7 +192,6 @@ app.post('/input', queryValidate, (req, res) => {
 app.post('/update', queryValidate, (req, res) => {
     let data = req.body.data;
     let validData = validateData(data);
-    console.log(req.body);
 
     if(!validData) {
         res.send({ message: "Invalid Data" });
@@ -185,11 +206,30 @@ app.post('/update', queryValidate, (req, res) => {
     }
 });
 
+//Update Feed
+app.post('/feed/update', queryValidate, (req, res) => {
+    sql = "UPDATE Feed \
+        SET cost = " + req.body.cost + " \
+        WHERE username = '" + req.validated.username + "' AND ID = " + req.body.id + ";";
+    dbHandler.simpleQuery(sql);
+    res.send({ message: "Data Updated"});
+});
+
 //Delete Data
 app.post('/delete', queryValidate, (req, res) => {
     let id = req.body.id;
 
     sql = "DELETE FROM TestEnv \
+        WHERE username = '" + req.validated.username + "' AND ID = " + req.body.id + ";";
+    dbHandler.simpleQuery(sql);
+    res.send({ message: "Data Removed"});
+});
+
+//Delete Feed
+app.post('/feed/delete', queryValidate, (req, res) => {
+    let id = req.body.id;
+
+    sql = "DELETE FROM Feed \
         WHERE username = '" + req.validated.username + "' AND ID = " + req.body.id + ";";
     dbHandler.simpleQuery(sql);
     res.send({ message: "Data Removed"});

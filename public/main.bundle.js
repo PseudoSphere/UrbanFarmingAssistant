@@ -122,7 +122,7 @@ var appRoutes = [
       {path: 'data', component: DataComponent},
       {path: 'profile', component: ProfileComponent}
     /**/
-    /**/
+    /* */
     { path: 'input', component: __WEBPACK_IMPORTED_MODULE_7__components_entryform_entryform_component__["a" /* EntryformComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] },
     { path: 'data', component: __WEBPACK_IMPORTED_MODULE_9__components_data_data_component__["a" /* DataComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] },
     { path: 'profile', component: __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__["a" /* ProfileComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] }
@@ -181,7 +181,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/data/data.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\r\n    <canvas id=\"myChart\"></canvas>\r\n    <div *ngIf=\"showGraph\">\r\n        <input type=\"checkbox\" [checked]=\"graphCEggs.show\" (change)=\"updateCEggs()\">Graph Chicken Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphDEggs.show\"(change)=\"updateDEggs()\">Graph Duck Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphGMilk.show\" (change)=\"updateGMilk()\">Graph Goat Milk Data<br>\r\n    </div>\r\n</div>\r\n\r\n<div class=\"container\" style=\"max-width:500px\">\r\n    <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\r\n    {{ dataInfo.message }}\r\n  </div>\r\n    <div class=\"input-group\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\">View </button>\r\n        </span>\r\n        <input type=\"number\" [(ngModel)]=\"timeFrame\" class=\"form-control\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\"> days </button>\r\n        </span>\r\n    </div>\r\n</div>\r\n<hr>\r\n\r\n<div *ngIf=\"showTable\" class=\"container\">\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Chicken Eggs</th>\r\n                <th class=\"text-center\">Duck Eggs</th>\r\n                <th class=\"text-center\">Goat Milk</th>\r\n                <th class=\"text-center\" colspan=\"2\">Options</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <ng-template ngFor let-id [ngForOf]=\"idArray\">\r\n                <!-- EDIT -->\r\n                <tr *ngIf=\"table[id].edit\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.chickenEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.duckEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.goatMilk\" class=\"form-control\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Submit\" (click)=\"submitEdit(id)\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Cancel\" (click)=\"cancelEdit(id)\"></td>\r\n                </tr>\r\n                <!-- DELETE -->\r\n                <tr *ngIf=\"table[id].delete\" class=\"warning\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Confirm Delete\" (click)=\"submitDelete(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-danger btn-sm\" value=\"Cancel\" (click)=\"cancelDelete(id)\">\r\n                    </td>\r\n                </tr>\r\n                <!-- DEFAULT -->\r\n                <tr *ngIf=\"!table[id].edit && !table[id].delete\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Edit\" (click)=\"editRow(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Delete\" (click)=\"deleteRow(id)\">\r\n                    </td>\r\n                </tr>\r\n            </ng-template>\r\n        <tbody>    \r\n    </table>\r\n    <div *ngIf=\"loading\" class=\"alert alert-info\">\r\n            Loading Data...\r\n    </div>\r\n    <div *ngIf=\"noData\" class=\"alert alert-info\">\r\n            You have no data to view. Submit some on the Input page!\r\n    </div>\r\n</div>"
+module.exports = "<div class=\"container\">\r\n    <h3>Product Over Time</h3>\r\n    <canvas id=\"myChart\"></canvas>\r\n    <div *ngIf=\"showGraph\">\r\n        <input type=\"checkbox\" [checked]=\"graphCEggs.show\" (change)=\"updateCEggs()\">Graph Chicken Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphDEggs.show\"(change)=\"updateDEggs()\">Graph Duck Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphGMilk.show\" (change)=\"updateGMilk()\">Graph Goat Milk Data<br>\r\n    </div>\r\n</div>\r\n<hr>\r\n<div class=\"container\">\r\n    <h3>Time Frame Selector</h3>\r\n    <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\r\n    {{ dataInfo.message }}\r\n  </div>\r\n    <div class=\"input-group\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\">View </button>\r\n        </span>\r\n        <input type=\"number\" [(ngModel)]=\"timeFrame\" class=\"form-control\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\"> days </button>\r\n        </span>\r\n    </div>\r\n</div>\r\n<hr>\r\n\r\n<!-- -- -- -- DATA TABLE -- -- -- -->\r\n<div *ngIf=\"showTable\" class=\"container\">\r\n    <h3>Product Data</h3>\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Chicken Eggs</th>\r\n                <th class=\"text-center\">Duck Eggs</th>\r\n                <th class=\"text-center\">Goat Milk</th>\r\n                <th class=\"text-center\" colspan=\"2\">Options</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <ng-template ngFor let-id [ngForOf]=\"idArray\">\r\n                <!-- EDIT -->\r\n                <tr *ngIf=\"table[id].edit\">\r\n                    <td>{{ table[id].date }}</td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.chickenEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.duckEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.goatMilk\" class=\"form-control\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Submit\" (click)=\"submitEdit(id)\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Cancel\" (click)=\"cancelEdit(id)\"></td>\r\n                </tr>\r\n                <!-- DELETE -->\r\n                <tr *ngIf=\"table[id].delete\" class=\"warning\">\r\n                    <td>{{ table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Confirm Delete\" (click)=\"submitDelete(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-danger btn-sm\" value=\"Cancel\" (click)=\"cancelDelete(id)\">\r\n                    </td>\r\n                </tr>\r\n                <!-- DEFAULT -->\r\n                <tr *ngIf=\"!table[id].edit && !table[id].delete\">\r\n                    <td>{{ table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Edit\" (click)=\"editRow(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Delete\" (click)=\"deleteRow(id)\">\r\n                    </td>\r\n                </tr>\r\n            </ng-template>\r\n        <tbody>    \r\n    </table>\r\n    <div *ngIf=\"loading\" class=\"alert alert-info\">\r\n            Loading Data...\r\n    </div>\r\n    <div *ngIf=\"noData\" class=\"alert alert-info\">\r\n            You have no data to view. Submit some on the Input page!\r\n    </div>\r\n    <hr>\r\n\r\n    <!-- -- -- -- FEED TABLE-- -- -- -->\r\n    <h3>Feed Data</h3>\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Feed For</th>\r\n                <th class=\"text-center\">Cost</th>\r\n                <th class=\"text-center\" colspan=\"2\">Options</th>\r\n                <th class=\"text-center\">Cost Per Product*</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <ng-template ngFor let-id [ngForOf]=\"idFeed\">\r\n                <!-- EDIT -->\r\n                <tr *ngIf=\"feedTable[id].edit\">\r\n                    <td>{{ feedTable[id].date }}</td>\r\n                    <td>{{ feedTable[id].feedType }}</td>\r\n                    <td>$<input type=\"number\" [(ngModel)]=\"feedTable[id].data.edited.cost\" class=\"form-control\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Submit\" (click)=\"submitEditFeed(id)\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Cancel\" (click)=\"cancelEditFeed(id)\"></td>\r\n                </tr>\r\n                <!-- DELETE -->\r\n                <tr *ngIf=\"feedTable[id].delete\" class=\"warning\">\r\n                    <td>{{ feedTable[id].date }}</td>\r\n                    <td>{{ feedTable[id].feedType }}</td>\r\n                    <td>${{ feedTable[id].data.original.cost }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Confirm Delete\" (click)=\"submitDeleteFeed(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-danger btn-sm\" value=\"Cancel\" (click)=\"cancelDeleteFeed(id)\">\r\n                    </td>\r\n                </tr>\r\n                <!-- DEFAULT -->\r\n                <tr *ngIf=\"!feedTable[id].edit && !feedTable[id].delete\">\r\n                    <td>{{ feedTable[id].date }}</td>\r\n                    <td>{{ feedTable[id].feedType }}</td>\r\n                    <td>${{ feedTable[id].data.original.cost }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Edit\" (click)=\"editRowFeed(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Delete\" (click)=\"deleteRowFeed(id)\">\r\n                    </td>\r\n                    <td>${{ feedTable[id].costPerProduct }}</td>\r\n                </tr>\r\n            </ng-template>\r\n        <tbody>\r\n    </table>\r\n    <p>*Product cost shown is for the period between the feed shown(inclusive) and the next(exclusive)</p>\r\n</div>"
 
 /***/ }),
 
@@ -213,24 +213,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // Globals
 
 var DataComponent = (function () {
-    /* Table Structure
-      {
-        edit: false,
-        delete: false,
-        id: row.id,
-        data: {
-          original: {
-            chickenEggs: row.chickenEggs,
-            duckEggs: row.duckEggs,
-            goatMilk: row.goatMilk
-          },
-          edited: {
-            chickenEggs: row.chickenEggs,
-            duckEggs: row.duckEggs,
-            goatMilk: row.goatMilk
-          }
-        }
-     */
+    /* feedTable Structure
+    {
+      edit: false,
+      delete: false,
+      id: row.id,
+      feedType: row.feedType,
+      costPerProduct: calcCost(),
+      data: {
+        original: {cost: row.cost},
+        edited: {cost: row.cost}
+      }
+    }
+    
+    */
     function DataComponent(http, userControl) {
         this.http = http;
         this.userControl = userControl;
@@ -243,10 +239,30 @@ var DataComponent = (function () {
         this.graphDEggs = { data: [], show: true };
         this.graphGMilk = { data: [], show: true };
         this.showGraph = false;
-        // Array for iteration
+        // --- Product Table ---
         this.idArray = [];
-        // 
         this.table = {};
+        /* table Structure
+          {
+            edit: false,
+            delete: false,
+            id: row.id,
+            data: {
+              original: {
+                chickenEggs: row.chickenEggs,
+                duckEggs: row.duckEggs,
+                goatMilk: row.goatMilk
+              },
+              edited: {
+                chickenEggs: row.chickenEggs,
+                duckEggs: row.duckEggs,
+                goatMilk: row.goatMilk
+              }
+            }
+         */
+        this.idFeed = [];
+        this.nextOpened = {}; //{"<feedType>":"<date>"}
+        this.feedTable = {};
     }
     DataComponent.prototype.ngOnInit = function () {
         this.getData();
@@ -257,9 +273,18 @@ var DataComponent = (function () {
               {"ID":71,"date":"2017-08-04","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"},
               {"ID":70,"date":"2017-08-02","chickenEggs":6,"duckEggs":6,"goatMilk":6,"username":"test"},
               {"ID":72,"date":"2017-07-30","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"},
-              {"ID":73,"date":"2017-05-24","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"}]
-            this.constructTable(testData);
-        */
+              {"ID":73,"date":"2017-05-24","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"}];
+            this.constructProductTable(testData);
+        
+            let testFeed = [
+              {"ID":68,"date":"2017-08-08", "feedType":"chickenEggs", "cost":"10","username":"test"},
+              {"ID":69,"date":"2017-08-08", "feedType":"duckEggs", "cost":"15","username":"test"},
+              {"ID":71,"date":"2017-08-08", "feedType":"goatMilk", "cost":"30","username":"test"},
+              {"ID":73,"date":"2017-08-01", "feedType":"chickenEggs", "cost":"10","username":"test"},
+              {"ID":75,"date":"2017-08-01", "feedType":"duckEggs", "cost":"15","username":"test"},
+              {"ID":80,"date":"2017-08-01", "feedType":"goatMilk", "cost":"30","username":"test"}];
+            this.constructFeedTable(testFeed);
+        /**/
     };
     DataComponent.prototype.getData = function () {
         var _this = this;
@@ -283,7 +308,9 @@ var DataComponent = (function () {
         this.loading = false;
         if (data.dataExists) {
             var table = JSON.parse(data.table);
-            this.constructTable(table);
+            this.constructProductTable(table);
+            var feedTable = JSON.parse(data.feedTable);
+            this.constructFeedTable(feedTable);
             this.noData = false;
         }
         else {
@@ -291,7 +318,7 @@ var DataComponent = (function () {
         }
     };
     // Construct a table
-    DataComponent.prototype.constructTable = function (data) {
+    DataComponent.prototype.constructProductTable = function (data) {
         var _this = this;
         // Reset the Table and Visuals
         this.idArray = [];
@@ -301,11 +328,11 @@ var DataComponent = (function () {
         this.graphDEggs.data = [];
         this.graphGMilk.data = [];
         data.forEach(function (row) {
-            _this.constructElement(row);
+            _this.constructProductElement(row);
         });
         this.buildGraph();
     };
-    DataComponent.prototype.constructElement = function (row) {
+    DataComponent.prototype.constructProductElement = function (row) {
         // Table
         this.idArray.push(row.ID);
         this.table[row.ID] = {
@@ -331,10 +358,10 @@ var DataComponent = (function () {
         var dateIndex = this.graphLabels.indexOf(row.date);
         // Not yet added
         if (dateIndex < 0) {
-            this.graphLabels.push(row.date);
-            this.graphCEggs.data.push(row.chickenEggs);
-            this.graphDEggs.data.push(row.duckEggs);
-            this.graphGMilk.data.push(row.goatMilk);
+            this.graphLabels.unshift(row.date);
+            this.graphCEggs.data.unshift(row.chickenEggs);
+            this.graphDEggs.data.unshift(row.duckEggs);
+            this.graphGMilk.data.unshift(row.goatMilk);
             // Lable exists, add to the value instead of creating another
         }
         else {
@@ -444,6 +471,104 @@ var DataComponent = (function () {
         this.graphGMilk.show = !this.graphGMilk.show;
         this.buildGraph();
     };
+    // -- -- -- -- Feed Functions -- -- -- --
+    // Construct a table
+    DataComponent.prototype.constructFeedTable = function (data) {
+        var _this = this;
+        // Reset the Table and Visuals
+        this.idFeed = [];
+        this.feedTable = {};
+        this.nextOpened = {};
+        data.forEach(function (row) {
+            _this.constructFeedElement(row);
+        });
+    };
+    DataComponent.prototype.constructFeedElement = function (row) {
+        var id = row.ID;
+        var date = row.date;
+        var feedType = row.feedType;
+        var cost = row.cost;
+        this.idFeed.push(id);
+        this.feedTable[id] = {
+            edit: false,
+            delete: false,
+            id: id,
+            date: date,
+            feedType: feedType,
+            costPerProduct: this.calcCost(date, feedType, cost),
+            data: {
+                original: { cost: cost },
+                edited: { cost: cost }
+            }
+        };
+    };
+    DataComponent.prototype.calcCost = function (dateLower, feedType, cost) {
+        var _this = this;
+        // final result = cost/sum(prodcut)
+        var sumProduct = 0;
+        // Check for history
+        if (this.nextOpened[feedType]) {
+            var dateUpper_1 = this.nextOpened[feedType];
+            this.idArray.forEach(function (id) {
+                var stringID = id.toString();
+                var rowDate = _this.table[stringID].date;
+                // Date is in range?
+                if (rowDate >= dateLower && rowDate < dateUpper_1) {
+                    // Add product to the sum
+                    sumProduct += _this.table[stringID].data.original[feedType];
+                }
+            });
+            if (sumProduct != 0) {
+                var result = cost / sumProduct;
+                return Math.round(result * 100) / 100;
+            }
+            // No history
+        }
+        else {
+            this.nextOpened[feedType] = dateLower;
+        }
+        // Nothing happened
+        return "N/A";
+    };
+    DataComponent.prototype.editRowFeed = function (id) {
+        this.feedTable[id].edit = true;
+    };
+    DataComponent.prototype.submitEditFeed = function (id) {
+        var _this = this;
+        var toSend = {
+            id: id,
+            cost: this.feedTable[id].data.edited.cost
+        };
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        headers.append('JWT', this.userControl.token.toString());
+        var response = this.http.post('/feed/update', toSend, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return _this.onComplete(data); }, function (err) { return console.log("Error", err); }, function () { return console.log('Data recieved.'); });
+    };
+    DataComponent.prototype.cancelEditFeed = function (id) {
+        this.feedTable[id].edit = false;
+    };
+    DataComponent.prototype.deleteRowFeed = function (id) {
+        this.feedTable[id].delete = true;
+    };
+    DataComponent.prototype.submitDeleteFeed = function (id) {
+        var _this = this;
+        var toSend = { id: id };
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        headers.append('JWT', this.userControl.token.toString());
+        var response = this.http.post('/feed/delete', toSend, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return _this.onComplete(data); }, function (err) { return console.log("Error", err); }, function () { return console.log('Data recieved.'); });
+    };
+    DataComponent.prototype.cancelDeleteFeed = function (id) {
+        this.feedTable[id].delete = false;
+    };
     return DataComponent;
 }());
 DataComponent = __decorate([
@@ -481,7 +606,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/entryform/entryform.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\n    {{ dataInfo.message }}\n  </div>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Date</span>\n    <input type=\"date\" [(ngModel)]=\"inputDate\" class=\"form-control\">\n  </div>\n  <hr>\n  <div *ngFor=\"let animal of animals\">\n    <div class=\"input-group\">\n      <span class=\"input-group-addon\">{{animal.name}}</span>\n      <input type=\"number\" [(ngModel)]=\"animal.quantity\" class=\"form-control\"> \n      <span class=\"input-group-addon\">{{animal.product}}</span>\n    </div>\n    <hr>\n  </div>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Submit\" (click)=\"inputData()\">\n</div>"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\n    {{ dataInfo.message }}\n  </div>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Date</span>\n    <input type=\"date\" [(ngModel)]=\"inputDate\" class=\"form-control\">\n  </div>\n  <hr>\n\n  <div *ngFor=\"let animal of animals\">\n    <div class=\"input-group\">\n      <span class=\"input-group-addon\">{{animal.name}}</span>\n      <input type=\"number\" [(ngModel)]=\"animal.quantity\" class=\"form-control\"> \n      <span class=\"input-group-addon\">{{animal.product}}</span>\n    </div>\n    <br>\n    <div class=\"input-group\">\n      <span class=\"input-group-addon\">New Feed*</span>\n      <span class=\"input-group-addon\">$</span>\n      <input type=\"number\" [(ngModel)]=\"animal.cost\" class=\"form-control\">\n    </div>\n    <hr>\n  </div>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Submit\" (click)=\"inputData()\">\n  <br>\n  <p>*Only enter feed cost when starting new cycle (aka opening a new bag/box of feed)</p>\n</div>"
 
 /***/ }),
 
@@ -536,12 +661,21 @@ var EntryformComponent = (function () {
         var request = {
             token: this.userControl.token,
             date: this.inputDate,
-            username: this.userControl.username
+            username: this.userControl.username,
+            feedValues: []
         };
         // Loop through each product
         this.animals.forEach(function (animal) {
             request[animal.dbColumn] = animal.quantity;
+            // if feed
+            if (animal.cost) {
+                request.feedValues.push({
+                    feedType: animal.dbColumn,
+                    cost: animal.cost
+                });
+            }
         });
+        console.log(request);
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
@@ -657,7 +791,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  <h3>Login</h3>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" class=\"btn\" value=\"Login\" (click)=\"login()\">"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Login</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"text\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Login\" (click)=\"login()\">\n</div>"
 
 /***/ }),
 
@@ -904,7 +1038,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  <h3>Create New Account</h3>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" class=\"btn\" value=\"Register\" (click)=\"register()\">"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Create New Account</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  \n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"text\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  \n  <input type=\"button\" class=\"btn btn-block\" value=\"Register\" (click)=\"register()\">\n</div>\n"
 
 /***/ }),
 
