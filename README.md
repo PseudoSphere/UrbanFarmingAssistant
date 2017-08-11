@@ -1,11 +1,19 @@
 # UrbanFarmingAssistant
-My Epic Project
-
 Deployment  
---add details--
+1. Add config/tedious.js  
+2. node server.js (or npm start or nodemon)
 
 Config setup  
---add details
+```module.exports = {
+    userName:   <database username>,
+    password:   <database password>,
+    server:     '<azure server>.database.windows.net',
+    options: {
+        database:   <database name>,
+        encrypt:    true,
+        rowCollectionOnRequestCompletion: true
+  }
+}```
 
 Client  
-Used for angular development, not needed for deployment
+can be found at https://github.com/PseudoSphere/UFAClient
