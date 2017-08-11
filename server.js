@@ -26,20 +26,22 @@ app.get('/farm.jpg', (req, res) => {
 })
 
 // Show Database Content
-app.get('/data/:timeFrame', (req, res) => {
+app.get('/data/:username/:timeFrame', queryValidate, (req, res) => {
+    let username = req.validated.username;
     let timeFrame = req.params.timeFrame;
-    let sql = 'SELECT date,\
-            SUM(chickenEggs) as chickenEggs, \
-            SUM(duckEggs) as duckEggs, \
-            SUM(goatMilk) as goatMilk \
-            FROM TestEnv \
-        WHERE date >= DATEADD(DAY, -' + timeFrame + ', GETDATE()) \
-        GROUP BY date \
+    let sql = "SELECT * FROM TestEnv \
+        WHERE date >= DATEADD(DAY, -" + timeFrame + ", GETDATE()) \
+        AND username = '" + username + "' \
         ORDER BY date DESC \
-        FOR JSON AUTO;';
-    dbHandler.query(sql, (columns) => {
-        let rawTable = columns[0].value;
-        res.send(rawTable);
+        FOR JSON AUTO;";
+    dbHandler.betterQuery(sql, (err, rowCount, rows) => {
+        if(rowCount < 1) {
+            res.send({dataExists: false});
+            return;
+        }
+        // rows[0][0].value = array of returned objects
+        table = rows[0][0].value;
+        res.send({dataExists: true, table});
     });
 });
 
@@ -148,37 +150,14 @@ app.post('/register', (req, res) => {
 
 // Handle data input
 app.post('/input', queryValidate, (req, res) => {
-    let validData = true;
     let data = req.body;
-
-    // ---Validate data (Hacky validation until refactored DB)---
-    // Parsing a valid date returns a number, invalid dates turn NaN
-    if(!data.date || !typeof(Date.parse(data.date))=='number') {
-        validData = false;
-    }
-    // username
-    if(!data.username || !typeof(data.username)=='string') {
-        validData = false;
-    }
-    // chickenEggs
-    if(!data.chickenEggs == null && !typeof(data.chickenEggs)=='number') {
-        validData = false;
-    }
-    // duckEggs
-    if(!data.duckEggs == null && !typeof(data.duckEggs)=='number') {
-        validData = false;
-    }
-    // goatMilk
-    if(!data.goatMilk == null && !typeof(data.goatMilk)=='number') {
-        validData = false;
-    }
-    
+    let validData = validateData(data);    
 
     if(!validData) {
         res.send({ message: "Invalid Data" });
     } else {
         sql = "INSERT INTO TestEnv(date, username, chickenEggs, duckEggs, goatMilk) \
-            VALUES('" + data.date + "', '" + data.username + "', " +
+            VALUES('" + data.date + "', '" + req.validated.username + "', " +
                 (data.chickenEggs ? data.chickenEggs : 0) + ", " + 
                 (data.duckEggs ? data.duckEggs : 0) + ", " +
                 (data.goatMilk ? data.goatMilk : 0) + ");";
@@ -187,15 +166,52 @@ app.post('/input', queryValidate, (req, res) => {
     }
 });
 
+//Update Data
+app.post('/update', queryValidate, (req, res) => {
+    let data = req.body.data;
+    let validData = validateData(data);
+    console.log(req.body);
+
+    if(!validData) {
+        res.send({ message: "Invalid Data" });
+    } else {
+        sql = "UPDATE TestEnv \
+            SET chickenEggs = " + (data.chickenEggs ? data.chickenEggs : 0) + ", \
+            duckEggs = " + (data.duckEggs ? data.duckEggs : 0) + ", \
+            goatMilk = " + (data.goatMilk ? data.goatMilk : 0) +
+            " WHERE username = '" + req.validated.username + "' AND ID = " + req.body.id + ";";
+        dbHandler.simpleQuery(sql);
+        res.send({ message: "Data Updated"});
+    }
+});
+
+//Delete Data
+app.post('/delete', queryValidate, (req, res) => {
+    let id = req.body.id;
+
+    sql = "DELETE FROM TestEnv \
+        WHERE username = '" + req.validated.username + "' AND ID = " + req.body.id + ";";
+    dbHandler.simpleQuery(sql);
+    res.send({ message: "Data Removed"});
+});
+
 // Listen on Port
 app.listen(port, () => {
   console.log('Server started on port '+ port + "...");
 });
 
 function queryValidate(req, res, next) {
+    // Get token username
+    token = req.headers.jwt;
+    if(!token) {
+        res.statusCode = 401;
+        res.send();
+    }
+    username = jwt.decode(token).username;
+
+    // Get password to verify token
     let sql = "SELECT password FROM Users WHERE username = '" 
-        + req.body.username + 
-        "' FOR JSON AUTO;";
+        + username + "' FOR JSON AUTO;";
     dbHandler.betterQuery(sql, (err, rowCount, rows) => {
         if(rowCount < 1) { 
             res.statusCode = 401;
@@ -207,13 +223,33 @@ function queryValidate(req, res, next) {
         password = data[0].password;
         
         // Authenticate
-        let decoded = jwt.verify(req.body.token, password);
-        console.log("decoded: ", decoded)
-        if(decoded.username == req.body.username) {
-            next();
-        } else {
-            res.statusCode = 401;
-            res.send();
-        }
+        let decoded = jwt.verify(token, password, (err, token) => {
+            if (err) {
+                res.statusCode = 401;
+                res.send();
+            } else {
+                req.validated = {username};
+                next();
+            }
+        });
     })
+}
+function validateData(data) {
+    validData = true;
+
+    // ---Validate data (Hacky validation until refactored DB)---
+    // chickenEggs
+    if(!(data.chickenEggs == null) && !typeof(data.chickenEggs)=='number') {
+        validData = false;
+    }
+    // duckEggs
+    if(!(data.duckEggs == null) && !typeof(data.duckEggs)=='number') {
+        validData = false;
+    }
+    // goatMilk
+    if(!(data.goatMilk == null) && !typeof(data.goatMilk)=='number') {
+        validData = false;
+    }
+
+    return validData;
 }

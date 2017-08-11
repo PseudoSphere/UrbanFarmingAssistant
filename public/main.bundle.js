@@ -117,9 +117,16 @@ var appRoutes = [
     { path: '', component: __WEBPACK_IMPORTED_MODULE_10__components_home_home_component__["a" /* HomeComponent */] },
     { path: 'login', component: __WEBPACK_IMPORTED_MODULE_8__components_login_login_component__["a" /* LoginComponent */] },
     { path: 'register', component: __WEBPACK_IMPORTED_MODULE_11__components_register_register_component__["a" /* RegisterComponent */] },
-    { path: 'input', component: __WEBPACK_IMPORTED_MODULE_7__components_entryform_entryform_component__["a" /* EntryformComponent */], },
-    { path: 'data', component: __WEBPACK_IMPORTED_MODULE_9__components_data_data_component__["a" /* DataComponent */], },
-    { path: 'profile', component: __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__["a" /* ProfileComponent */], }
+    /* Remove login requirement for ease of testing
+      {path: 'input', component: EntryformComponent},
+      {path: 'data', component: DataComponent},
+      {path: 'profile', component: ProfileComponent}
+    /**/
+    /**/
+    { path: 'input', component: __WEBPACK_IMPORTED_MODULE_7__components_entryform_entryform_component__["a" /* EntryformComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] },
+    { path: 'data', component: __WEBPACK_IMPORTED_MODULE_9__components_data_data_component__["a" /* DataComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] },
+    { path: 'profile', component: __WEBPACK_IMPORTED_MODULE_12__components_profile_profile_component__["a" /* ProfileComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_13__globals_user_control_service__["a" /* UserControlService */]] }
+    /**/
 ];
 var AppModule = (function () {
     function AppModule() {
@@ -174,7 +181,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/data/data.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<table><tr>\r\n    <td><div class=\"input-group\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\">View </button>\r\n        </span>\r\n        <input type=\"number\" [(ngModel)]=\"timeFrame\" class=\"form-control\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\"> days </button>\r\n        </span>\r\n    </div></td>\r\n    <td></td>\r\n</tr></table>\r\n<hr>\r\n\r\n<div *ngIf=\"showTable\">\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Chicken Eggs</th>\r\n                <th class=\"text-center\">Duck Eggs</th>\r\n                <th class=\"text-center\">Goat Milk</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <tr *ngFor=\"let row of table\">\r\n                <td>{{ row.date }}</td>\r\n                <td>{{ row.chickenEggs }}</td>\r\n                <td>{{ row.duckEggs }}</td>\r\n                <td>{{ row.goatMilk }}</td>\r\n            </tr>\r\n        <tbody>    \r\n    </table>\r\n    <div *ngIf=\"!table\" class=\"alert alert-info\">\r\n            Loading Data...\r\n    </div>\r\n</div>"
+module.exports = "<div class=\"container\">\r\n    <canvas id=\"myChart\"></canvas>\r\n    <div *ngIf=\"showGraph\">\r\n        <input type=\"checkbox\" [checked]=\"graphCEggs.show\" (change)=\"updateCEggs()\">Graph Chicken Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphDEggs.show\"(change)=\"updateDEggs()\">Graph Duck Egg Data<br>\r\n        <input type=\"checkbox\" [checked]=\"graphGMilk.show\" (change)=\"updateGMilk()\">Graph Goat Milk Data<br>\r\n    </div>\r\n</div>\r\n\r\n<div class=\"container\" style=\"max-width:500px\">\r\n    <div *ngIf=\"dataInfo.show\" class=\"alert alert-info\" (click)=\"hideMessage()\">\r\n    {{ dataInfo.message }}\r\n  </div>\r\n    <div class=\"input-group\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\">View </button>\r\n        </span>\r\n        <input type=\"number\" [(ngModel)]=\"timeFrame\" class=\"form-control\">\r\n        <span class=\"input-group-btn\" (click)=\"getData()\">\r\n            <button class=\"btn btn-default\" type=\"button\"> days </button>\r\n        </span>\r\n    </div>\r\n</div>\r\n<hr>\r\n\r\n<div *ngIf=\"showTable\" class=\"container\">\r\n    <table class=\"table table-striped table-responsive text-center\">\r\n        <thead>\r\n            <tr>\r\n                <th class=\"text-center\">Date</th>\r\n                <th class=\"text-center\">Chicken Eggs</th>\r\n                <th class=\"text-center\">Duck Eggs</th>\r\n                <th class=\"text-center\">Goat Milk</th>\r\n                <th class=\"text-center\" colspan=\"2\">Options</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody *ngIf=\"table\">\r\n            <ng-template ngFor let-id [ngForOf]=\"idArray\">\r\n                <!-- EDIT -->\r\n                <tr *ngIf=\"table[id].edit\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.chickenEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.duckEggs\" class=\"form-control\"></td>\r\n                    <td><input type=\"number\" [(ngModel)]=\"table[id].data.edited.goatMilk\" class=\"form-control\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Submit\" (click)=\"submitEdit(id)\"></td>\r\n                    <td><input type=\"button\" class=\"btn btn-sm\" value=\"Cancel\" (click)=\"cancelEdit(id)\"></td>\r\n                </tr>\r\n                <!-- DELETE -->\r\n                <tr *ngIf=\"table[id].delete\" class=\"warning\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Confirm Delete\" (click)=\"submitDelete(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-danger btn-sm\" value=\"Cancel\" (click)=\"cancelDelete(id)\">\r\n                    </td>\r\n                </tr>\r\n                <!-- DEFAULT -->\r\n                <tr *ngIf=\"!table[id].edit && !table[id].delete\">\r\n                    <td>{{  table[id].date }}</td>\r\n                    <td>{{ table[id].data.original.chickenEggs }}</td>\r\n                    <td>{{ table[id].data.original.duckEggs }}</td>\r\n                    <td>{{ table[id].data.original.goatMilk }}</td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Edit\" (click)=\"editRow(id)\">\r\n                    </td>\r\n                    <td>\r\n                        <input type=\"button\" class=\"btn btn-sm\" value=\"Delete\" (click)=\"deleteRow(id)\">\r\n                    </td>\r\n                </tr>\r\n            </ng-template>\r\n        <tbody>    \r\n    </table>\r\n    <div *ngIf=\"loading\" class=\"alert alert-info\">\r\n            Loading Data...\r\n    </div>\r\n    <div *ngIf=\"noData\" class=\"alert alert-info\">\r\n            You have no data to view. Submit some on the Input page!\r\n    </div>\r\n</div>"
 
 /***/ }),
 
@@ -186,6 +193,9 @@ module.exports = "<table><tr>\r\n    <td><div class=\"input-group\">\r\n        
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__("../../../../rxjs/add/operator/map.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_chart_js__ = __webpack_require__("../../../../chart.js/src/chart.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_chart_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_chart_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__ = __webpack_require__("../../../../../src/app/globals/user-control.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DataComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -199,25 +209,240 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+// Globals
+
 var DataComponent = (function () {
-    function DataComponent(http) {
+    /* Table Structure
+      {
+        edit: false,
+        delete: false,
+        id: row.id,
+        data: {
+          original: {
+            chickenEggs: row.chickenEggs,
+            duckEggs: row.duckEggs,
+            goatMilk: row.goatMilk
+          },
+          edited: {
+            chickenEggs: row.chickenEggs,
+            duckEggs: row.duckEggs,
+            goatMilk: row.goatMilk
+          }
+        }
+     */
+    function DataComponent(http, userControl) {
         this.http = http;
+        this.userControl = userControl;
         this.timeFrame = 30;
         this.showTable = false;
-        this.getData();
+        this.dataInfo = { show: false };
+        // Graph Variabls
+        this.graphLabels = [];
+        this.graphCEggs = { data: [], show: true };
+        this.graphDEggs = { data: [], show: true };
+        this.graphGMilk = { data: [], show: true };
+        this.showGraph = false;
+        // Array for iteration
+        this.idArray = [];
+        // 
+        this.table = {};
     }
     DataComponent.prototype.ngOnInit = function () {
+        this.getData();
+        /*
+            let testData = [
+              {"ID":68,"date":"2017-08-08","chickenEggs":4,"duckEggs":3,"goatMilk":2,"username":"test"},
+              {"ID":69,"date":"2017-08-08","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"},
+              {"ID":71,"date":"2017-08-04","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"},
+              {"ID":70,"date":"2017-08-02","chickenEggs":6,"duckEggs":6,"goatMilk":6,"username":"test"},
+              {"ID":72,"date":"2017-07-30","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"},
+              {"ID":73,"date":"2017-05-24","chickenEggs":2,"duckEggs":3,"goatMilk":2,"username":"test"}]
+            this.constructTable(testData);
+        */
     };
     DataComponent.prototype.getData = function () {
         var _this = this;
         this.showTable = true;
+        if (!this.userControl.loggedIn) {
+            return;
+        }
+        this.loading = true;
+        var url = '/data/' + this.userControl.username + '/' + this.timeFrame;
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        var response = this.http.get('/data/' + this.timeFrame, { headers: headers });
+        headers.append('JWT', this.userControl.token.toString());
+        var response = this.http.get(url, { headers: headers });
         response
             .map(function (n) { return n.json(); })
-            .subscribe(function (data) { return _this.table = data; }, function (err) { return console.log("Error", err); }, function () { return console.log("Data Recieved."); });
+            .subscribe(function (data) { return _this.handleIt(data); }, function (err) { return console.log("Error", err); }, function () { return console.log('Data recieved.'); });
+    };
+    // Show/hide various messages and populate the table
+    DataComponent.prototype.handleIt = function (data) {
+        this.loading = false;
+        if (data.dataExists) {
+            var table = JSON.parse(data.table);
+            this.constructTable(table);
+            this.noData = false;
+        }
+        else {
+            this.noData = true;
+        }
+    };
+    // Construct a table
+    DataComponent.prototype.constructTable = function (data) {
+        var _this = this;
+        // Reset the Table and Visuals
+        this.idArray = [];
+        this.table = {};
+        this.graphLabels = [];
+        this.graphCEggs.data = [];
+        this.graphDEggs.data = [];
+        this.graphGMilk.data = [];
+        data.forEach(function (row) {
+            _this.constructElement(row);
+        });
+        this.buildGraph();
+    };
+    DataComponent.prototype.constructElement = function (row) {
+        // Table
+        this.idArray.push(row.ID);
+        this.table[row.ID] = {
+            edit: false,
+            delete: false,
+            id: row.ID,
+            date: row.date,
+            data: {
+                original: {
+                    chickenEggs: row.chickenEggs,
+                    duckEggs: row.duckEggs,
+                    goatMilk: row.goatMilk
+                },
+                edited: {
+                    chickenEggs: row.chickenEggs,
+                    duckEggs: row.duckEggs,
+                    goatMilk: row.goatMilk
+                }
+            }
+        };
+        // --Graph--
+        // Grab label if it exists
+        var dateIndex = this.graphLabels.indexOf(row.date);
+        // Not yet added
+        if (dateIndex < 0) {
+            this.graphLabels.push(row.date);
+            this.graphCEggs.data.push(row.chickenEggs);
+            this.graphDEggs.data.push(row.duckEggs);
+            this.graphGMilk.data.push(row.goatMilk);
+            // Lable exists, add to the value instead of creating another
+        }
+        else {
+            this.graphCEggs.data[dateIndex] += row.chickenEggs;
+            this.graphDEggs.data[dateIndex] += row.duckEggs;
+            this.graphGMilk.data[dateIndex] += row.goatMilk;
+        }
+    }; // <--constructElement
+    // HTML manipulation
+    DataComponent.prototype.editRow = function (id) {
+        this.table[id].edit = true;
+    };
+    DataComponent.prototype.submitEdit = function (id) {
+        var _this = this;
+        var toSend = {
+            id: id,
+            data: this.table[id].data.edited
+        };
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        headers.append('JWT', this.userControl.token.toString());
+        var response = this.http.post('/update', toSend, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return _this.onComplete(data); }, function (err) { return console.log("Error", err); }, function () { return console.log('Data recieved.'); });
+    };
+    DataComponent.prototype.cancelEdit = function (id) {
+        this.table[id].edit = false;
+    };
+    DataComponent.prototype.deleteRow = function (id) {
+        this.table[id].delete = true;
+    };
+    DataComponent.prototype.submitDelete = function (id) {
+        var _this = this;
+        var toSend = { id: id };
+        // HTTP request
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        headers.append('JWT', this.userControl.token.toString());
+        var response = this.http.post('/delete', toSend, { headers: headers });
+        response
+            .map(function (n) { return n.json(); })
+            .subscribe(function (data) { return _this.onComplete(data); }, function (err) { return console.log("Error", err); }, function () { return console.log('Data recieved.'); });
+    };
+    DataComponent.prototype.onComplete = function (data) {
+        this.dataInfo.message = data.message;
+        this.dataInfo.show = true;
+        // Refresh
+        this.getData();
+    };
+    DataComponent.prototype.cancelDelete = function (id) {
+        this.table[id].delete = false;
+    };
+    DataComponent.prototype.hideMessage = function () {
+        this.dataInfo.show = false;
+    };
+    // --- Build The Graph ---
+    DataComponent.prototype.buildGraph = function () {
+        this.showGraph = true;
+        var chart = document.getElementById("myChart");
+        var data = {
+            labels: this.graphLabels,
+            datasets: [
+                {
+                    label: "Chicken Eggs",
+                    fill: false,
+                    showLine: this.graphCEggs.show,
+                    borderColor: "#fff",
+                    pointRadius: 0,
+                    data: this.graphCEggs.data
+                },
+                {
+                    label: "Duck Eggs",
+                    fill: false,
+                    showLine: this.graphDEggs.show,
+                    borderColor: "#555",
+                    pointRadius: 0,
+                    data: this.graphDEggs.data
+                },
+                {
+                    label: "Goat Milk",
+                    fill: false,
+                    showLine: this.graphGMilk.show,
+                    borderColor: "#888",
+                    pointRadius: 0,
+                    data: this.graphGMilk.data
+                }
+            ]
+        };
+        var dataChart = new __WEBPACK_IMPORTED_MODULE_3_chart_js___default.a(chart, {
+            type: 'line',
+            data: data,
+            options: {}
+        });
+    };
+    // Manipulate Graph Visuals
+    DataComponent.prototype.updateCEggs = function () {
+        this.graphCEggs.show = !this.graphCEggs.show;
+        this.buildGraph();
+    };
+    DataComponent.prototype.updateDEggs = function () {
+        this.graphDEggs.show = !this.graphDEggs.show;
+        this.buildGraph();
+    };
+    DataComponent.prototype.updateGMilk = function () {
+        this.graphGMilk.show = !this.graphGMilk.show;
+        this.buildGraph();
     };
     return DataComponent;
 }());
@@ -227,10 +452,10 @@ DataComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/data/data.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/data/data.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__globals_user_control_service__["a" /* UserControlService */]) === "function" && _b || Object])
 ], DataComponent);
 
-var _a;
+var _a, _b;
 //# sourceMappingURL=data.component.js.map
 
 /***/ }),
@@ -320,6 +545,7 @@ var EntryformComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
+        headers.append('JWT', this.userControl.token.toString());
         var response = this.http.post('/input', request, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -365,7 +591,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"text-center\">\n    <img src=\"/farm.jpg\" width=\"500\"\n        class=\"img-responsive img-rounded center-block\">\n\n    <p>\n        Take Urban Farming to the next level.\n    </p>\n</div>"
+module.exports = "<div class=\"container\">\n    <img src=\"/farm.jpg\" width=\"500\"\n        class=\"img-responsive img-rounded center-block\">\n\n    <p class=\"text-center\">\n        Take Urban Farming to the next level.\n    </p>\n</div>"
 
 /***/ }),
 
@@ -431,7 +657,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" class=\"btn\" value=\"Login\" (click)=\"login()\">"
+module.exports = "<div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n  <p>{{ error.message }}</p>\n</div> \n\n<div>\n  <h3>Login</h3>\n  Username<br>\n  <input type=\"text\" [(ngModel)]=\"user.username\"><br>\n  <hr>\n\n  Password<br>\n  <input type=\"text\" [(ngModel)]=\"user.password\"><br>\n  <hr>\n</div>\n<input type=\"button\" class=\"btn\" value=\"Login\" (click)=\"login()\">"
 
 /***/ }),
 
@@ -612,7 +838,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/profile/profile.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>Profile</h1>"
+module.exports = "<div class=\"container\">\r\n    <h1>Profile</h1>\r\n    <p>Username: {{ userControl.username }}</p>\r\n</div>"
 
 /***/ }),
 
@@ -621,6 +847,7 @@ module.exports = "<h1>Profile</h1>"
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals_user_control_service__ = __webpack_require__("../../../../../src/app/globals/user-control.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ProfileComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -632,8 +859,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+// Globals
+
 var ProfileComponent = (function () {
-    function ProfileComponent() {
+    function ProfileComponent(userControl) {
+        this.userControl = userControl;
     }
     ProfileComponent.prototype.ngOnInit = function () {
     };
@@ -645,9 +875,10 @@ ProfileComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/components/profile/profile.component.html"),
         styles: [__webpack_require__("../../../../../src/app/components/profile/profile.component.css")]
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__globals_user_control_service__["a" /* UserControlService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__globals_user_control_service__["a" /* UserControlService */]) === "function" && _a || Object])
 ], ProfileComponent);
 
+var _a;
 //# sourceMappingURL=profile.component.js.map
 
 /***/ }),
@@ -888,6 +1119,259 @@ if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment *
 }
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */]);
 //# sourceMappingURL=main.js.map
+
+/***/ }),
+
+/***/ "../../../../moment/locale recursive ^\\.\\/.*$":
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./af": "../../../../moment/locale/af.js",
+	"./af.js": "../../../../moment/locale/af.js",
+	"./ar": "../../../../moment/locale/ar.js",
+	"./ar-dz": "../../../../moment/locale/ar-dz.js",
+	"./ar-dz.js": "../../../../moment/locale/ar-dz.js",
+	"./ar-kw": "../../../../moment/locale/ar-kw.js",
+	"./ar-kw.js": "../../../../moment/locale/ar-kw.js",
+	"./ar-ly": "../../../../moment/locale/ar-ly.js",
+	"./ar-ly.js": "../../../../moment/locale/ar-ly.js",
+	"./ar-ma": "../../../../moment/locale/ar-ma.js",
+	"./ar-ma.js": "../../../../moment/locale/ar-ma.js",
+	"./ar-sa": "../../../../moment/locale/ar-sa.js",
+	"./ar-sa.js": "../../../../moment/locale/ar-sa.js",
+	"./ar-tn": "../../../../moment/locale/ar-tn.js",
+	"./ar-tn.js": "../../../../moment/locale/ar-tn.js",
+	"./ar.js": "../../../../moment/locale/ar.js",
+	"./az": "../../../../moment/locale/az.js",
+	"./az.js": "../../../../moment/locale/az.js",
+	"./be": "../../../../moment/locale/be.js",
+	"./be.js": "../../../../moment/locale/be.js",
+	"./bg": "../../../../moment/locale/bg.js",
+	"./bg.js": "../../../../moment/locale/bg.js",
+	"./bn": "../../../../moment/locale/bn.js",
+	"./bn.js": "../../../../moment/locale/bn.js",
+	"./bo": "../../../../moment/locale/bo.js",
+	"./bo.js": "../../../../moment/locale/bo.js",
+	"./br": "../../../../moment/locale/br.js",
+	"./br.js": "../../../../moment/locale/br.js",
+	"./bs": "../../../../moment/locale/bs.js",
+	"./bs.js": "../../../../moment/locale/bs.js",
+	"./ca": "../../../../moment/locale/ca.js",
+	"./ca.js": "../../../../moment/locale/ca.js",
+	"./cs": "../../../../moment/locale/cs.js",
+	"./cs.js": "../../../../moment/locale/cs.js",
+	"./cv": "../../../../moment/locale/cv.js",
+	"./cv.js": "../../../../moment/locale/cv.js",
+	"./cy": "../../../../moment/locale/cy.js",
+	"./cy.js": "../../../../moment/locale/cy.js",
+	"./da": "../../../../moment/locale/da.js",
+	"./da.js": "../../../../moment/locale/da.js",
+	"./de": "../../../../moment/locale/de.js",
+	"./de-at": "../../../../moment/locale/de-at.js",
+	"./de-at.js": "../../../../moment/locale/de-at.js",
+	"./de-ch": "../../../../moment/locale/de-ch.js",
+	"./de-ch.js": "../../../../moment/locale/de-ch.js",
+	"./de.js": "../../../../moment/locale/de.js",
+	"./dv": "../../../../moment/locale/dv.js",
+	"./dv.js": "../../../../moment/locale/dv.js",
+	"./el": "../../../../moment/locale/el.js",
+	"./el.js": "../../../../moment/locale/el.js",
+	"./en-au": "../../../../moment/locale/en-au.js",
+	"./en-au.js": "../../../../moment/locale/en-au.js",
+	"./en-ca": "../../../../moment/locale/en-ca.js",
+	"./en-ca.js": "../../../../moment/locale/en-ca.js",
+	"./en-gb": "../../../../moment/locale/en-gb.js",
+	"./en-gb.js": "../../../../moment/locale/en-gb.js",
+	"./en-ie": "../../../../moment/locale/en-ie.js",
+	"./en-ie.js": "../../../../moment/locale/en-ie.js",
+	"./en-nz": "../../../../moment/locale/en-nz.js",
+	"./en-nz.js": "../../../../moment/locale/en-nz.js",
+	"./eo": "../../../../moment/locale/eo.js",
+	"./eo.js": "../../../../moment/locale/eo.js",
+	"./es": "../../../../moment/locale/es.js",
+	"./es-do": "../../../../moment/locale/es-do.js",
+	"./es-do.js": "../../../../moment/locale/es-do.js",
+	"./es.js": "../../../../moment/locale/es.js",
+	"./et": "../../../../moment/locale/et.js",
+	"./et.js": "../../../../moment/locale/et.js",
+	"./eu": "../../../../moment/locale/eu.js",
+	"./eu.js": "../../../../moment/locale/eu.js",
+	"./fa": "../../../../moment/locale/fa.js",
+	"./fa.js": "../../../../moment/locale/fa.js",
+	"./fi": "../../../../moment/locale/fi.js",
+	"./fi.js": "../../../../moment/locale/fi.js",
+	"./fo": "../../../../moment/locale/fo.js",
+	"./fo.js": "../../../../moment/locale/fo.js",
+	"./fr": "../../../../moment/locale/fr.js",
+	"./fr-ca": "../../../../moment/locale/fr-ca.js",
+	"./fr-ca.js": "../../../../moment/locale/fr-ca.js",
+	"./fr-ch": "../../../../moment/locale/fr-ch.js",
+	"./fr-ch.js": "../../../../moment/locale/fr-ch.js",
+	"./fr.js": "../../../../moment/locale/fr.js",
+	"./fy": "../../../../moment/locale/fy.js",
+	"./fy.js": "../../../../moment/locale/fy.js",
+	"./gd": "../../../../moment/locale/gd.js",
+	"./gd.js": "../../../../moment/locale/gd.js",
+	"./gl": "../../../../moment/locale/gl.js",
+	"./gl.js": "../../../../moment/locale/gl.js",
+	"./gom-latn": "../../../../moment/locale/gom-latn.js",
+	"./gom-latn.js": "../../../../moment/locale/gom-latn.js",
+	"./he": "../../../../moment/locale/he.js",
+	"./he.js": "../../../../moment/locale/he.js",
+	"./hi": "../../../../moment/locale/hi.js",
+	"./hi.js": "../../../../moment/locale/hi.js",
+	"./hr": "../../../../moment/locale/hr.js",
+	"./hr.js": "../../../../moment/locale/hr.js",
+	"./hu": "../../../../moment/locale/hu.js",
+	"./hu.js": "../../../../moment/locale/hu.js",
+	"./hy-am": "../../../../moment/locale/hy-am.js",
+	"./hy-am.js": "../../../../moment/locale/hy-am.js",
+	"./id": "../../../../moment/locale/id.js",
+	"./id.js": "../../../../moment/locale/id.js",
+	"./is": "../../../../moment/locale/is.js",
+	"./is.js": "../../../../moment/locale/is.js",
+	"./it": "../../../../moment/locale/it.js",
+	"./it.js": "../../../../moment/locale/it.js",
+	"./ja": "../../../../moment/locale/ja.js",
+	"./ja.js": "../../../../moment/locale/ja.js",
+	"./jv": "../../../../moment/locale/jv.js",
+	"./jv.js": "../../../../moment/locale/jv.js",
+	"./ka": "../../../../moment/locale/ka.js",
+	"./ka.js": "../../../../moment/locale/ka.js",
+	"./kk": "../../../../moment/locale/kk.js",
+	"./kk.js": "../../../../moment/locale/kk.js",
+	"./km": "../../../../moment/locale/km.js",
+	"./km.js": "../../../../moment/locale/km.js",
+	"./kn": "../../../../moment/locale/kn.js",
+	"./kn.js": "../../../../moment/locale/kn.js",
+	"./ko": "../../../../moment/locale/ko.js",
+	"./ko.js": "../../../../moment/locale/ko.js",
+	"./ky": "../../../../moment/locale/ky.js",
+	"./ky.js": "../../../../moment/locale/ky.js",
+	"./lb": "../../../../moment/locale/lb.js",
+	"./lb.js": "../../../../moment/locale/lb.js",
+	"./lo": "../../../../moment/locale/lo.js",
+	"./lo.js": "../../../../moment/locale/lo.js",
+	"./lt": "../../../../moment/locale/lt.js",
+	"./lt.js": "../../../../moment/locale/lt.js",
+	"./lv": "../../../../moment/locale/lv.js",
+	"./lv.js": "../../../../moment/locale/lv.js",
+	"./me": "../../../../moment/locale/me.js",
+	"./me.js": "../../../../moment/locale/me.js",
+	"./mi": "../../../../moment/locale/mi.js",
+	"./mi.js": "../../../../moment/locale/mi.js",
+	"./mk": "../../../../moment/locale/mk.js",
+	"./mk.js": "../../../../moment/locale/mk.js",
+	"./ml": "../../../../moment/locale/ml.js",
+	"./ml.js": "../../../../moment/locale/ml.js",
+	"./mr": "../../../../moment/locale/mr.js",
+	"./mr.js": "../../../../moment/locale/mr.js",
+	"./ms": "../../../../moment/locale/ms.js",
+	"./ms-my": "../../../../moment/locale/ms-my.js",
+	"./ms-my.js": "../../../../moment/locale/ms-my.js",
+	"./ms.js": "../../../../moment/locale/ms.js",
+	"./my": "../../../../moment/locale/my.js",
+	"./my.js": "../../../../moment/locale/my.js",
+	"./nb": "../../../../moment/locale/nb.js",
+	"./nb.js": "../../../../moment/locale/nb.js",
+	"./ne": "../../../../moment/locale/ne.js",
+	"./ne.js": "../../../../moment/locale/ne.js",
+	"./nl": "../../../../moment/locale/nl.js",
+	"./nl-be": "../../../../moment/locale/nl-be.js",
+	"./nl-be.js": "../../../../moment/locale/nl-be.js",
+	"./nl.js": "../../../../moment/locale/nl.js",
+	"./nn": "../../../../moment/locale/nn.js",
+	"./nn.js": "../../../../moment/locale/nn.js",
+	"./pa-in": "../../../../moment/locale/pa-in.js",
+	"./pa-in.js": "../../../../moment/locale/pa-in.js",
+	"./pl": "../../../../moment/locale/pl.js",
+	"./pl.js": "../../../../moment/locale/pl.js",
+	"./pt": "../../../../moment/locale/pt.js",
+	"./pt-br": "../../../../moment/locale/pt-br.js",
+	"./pt-br.js": "../../../../moment/locale/pt-br.js",
+	"./pt.js": "../../../../moment/locale/pt.js",
+	"./ro": "../../../../moment/locale/ro.js",
+	"./ro.js": "../../../../moment/locale/ro.js",
+	"./ru": "../../../../moment/locale/ru.js",
+	"./ru.js": "../../../../moment/locale/ru.js",
+	"./sd": "../../../../moment/locale/sd.js",
+	"./sd.js": "../../../../moment/locale/sd.js",
+	"./se": "../../../../moment/locale/se.js",
+	"./se.js": "../../../../moment/locale/se.js",
+	"./si": "../../../../moment/locale/si.js",
+	"./si.js": "../../../../moment/locale/si.js",
+	"./sk": "../../../../moment/locale/sk.js",
+	"./sk.js": "../../../../moment/locale/sk.js",
+	"./sl": "../../../../moment/locale/sl.js",
+	"./sl.js": "../../../../moment/locale/sl.js",
+	"./sq": "../../../../moment/locale/sq.js",
+	"./sq.js": "../../../../moment/locale/sq.js",
+	"./sr": "../../../../moment/locale/sr.js",
+	"./sr-cyrl": "../../../../moment/locale/sr-cyrl.js",
+	"./sr-cyrl.js": "../../../../moment/locale/sr-cyrl.js",
+	"./sr.js": "../../../../moment/locale/sr.js",
+	"./ss": "../../../../moment/locale/ss.js",
+	"./ss.js": "../../../../moment/locale/ss.js",
+	"./sv": "../../../../moment/locale/sv.js",
+	"./sv.js": "../../../../moment/locale/sv.js",
+	"./sw": "../../../../moment/locale/sw.js",
+	"./sw.js": "../../../../moment/locale/sw.js",
+	"./ta": "../../../../moment/locale/ta.js",
+	"./ta.js": "../../../../moment/locale/ta.js",
+	"./te": "../../../../moment/locale/te.js",
+	"./te.js": "../../../../moment/locale/te.js",
+	"./tet": "../../../../moment/locale/tet.js",
+	"./tet.js": "../../../../moment/locale/tet.js",
+	"./th": "../../../../moment/locale/th.js",
+	"./th.js": "../../../../moment/locale/th.js",
+	"./tl-ph": "../../../../moment/locale/tl-ph.js",
+	"./tl-ph.js": "../../../../moment/locale/tl-ph.js",
+	"./tlh": "../../../../moment/locale/tlh.js",
+	"./tlh.js": "../../../../moment/locale/tlh.js",
+	"./tr": "../../../../moment/locale/tr.js",
+	"./tr.js": "../../../../moment/locale/tr.js",
+	"./tzl": "../../../../moment/locale/tzl.js",
+	"./tzl.js": "../../../../moment/locale/tzl.js",
+	"./tzm": "../../../../moment/locale/tzm.js",
+	"./tzm-latn": "../../../../moment/locale/tzm-latn.js",
+	"./tzm-latn.js": "../../../../moment/locale/tzm-latn.js",
+	"./tzm.js": "../../../../moment/locale/tzm.js",
+	"./uk": "../../../../moment/locale/uk.js",
+	"./uk.js": "../../../../moment/locale/uk.js",
+	"./ur": "../../../../moment/locale/ur.js",
+	"./ur.js": "../../../../moment/locale/ur.js",
+	"./uz": "../../../../moment/locale/uz.js",
+	"./uz-latn": "../../../../moment/locale/uz-latn.js",
+	"./uz-latn.js": "../../../../moment/locale/uz-latn.js",
+	"./uz.js": "../../../../moment/locale/uz.js",
+	"./vi": "../../../../moment/locale/vi.js",
+	"./vi.js": "../../../../moment/locale/vi.js",
+	"./x-pseudo": "../../../../moment/locale/x-pseudo.js",
+	"./x-pseudo.js": "../../../../moment/locale/x-pseudo.js",
+	"./yo": "../../../../moment/locale/yo.js",
+	"./yo.js": "../../../../moment/locale/yo.js",
+	"./zh-cn": "../../../../moment/locale/zh-cn.js",
+	"./zh-cn.js": "../../../../moment/locale/zh-cn.js",
+	"./zh-hk": "../../../../moment/locale/zh-hk.js",
+	"./zh-hk.js": "../../../../moment/locale/zh-hk.js",
+	"./zh-tw": "../../../../moment/locale/zh-tw.js",
+	"./zh-tw.js": "../../../../moment/locale/zh-tw.js"
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "../../../../moment/locale recursive ^\\.\\/.*$";
 
 /***/ }),
 

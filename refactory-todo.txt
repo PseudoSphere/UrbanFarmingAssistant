@@ -1,11 +1,12 @@
-Update dbHandler to use the "rows" parameter instead of "request.on('row', callback)
-    "rows
-    Rows as a result of executing the SQL statement.
-    Will only be avaiable if Connection's *config.options.rowCollectionOnRequestCompletion* is true."
 
 rename db TestEnv to Data
 
 restructure future Data table to "id, user, product, quanitity" from "id, user, chickenEggs, duckEggs, goatMilk"
 
-refactor Angular client to include a local DB for improved offline functionality
-    (pouchdb: https://pouchdb.com/api.html )
+Do not reload data after submit and delete
+
+Auto populate the data for the day in "input"
+
+"Keep me logged in"
+
+Make xAxis scale properly (skip a month? leave a gap. etc.)

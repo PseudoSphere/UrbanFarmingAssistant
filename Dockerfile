@@ -11,6 +11,7 @@ RUN npm install
 # Bundle app source
 COPY public public
 COPY config config
+COPY publicAssets publicAssets
 COPY dbHandler.js .
 COPY server.js .
 

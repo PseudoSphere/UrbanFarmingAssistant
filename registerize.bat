@@ -1,4 +1,4 @@
-set version=0.0.4
+set version=0.0.7
 
 docker build -t ufa:%version% .
 
