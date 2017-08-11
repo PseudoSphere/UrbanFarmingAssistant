@@ -289,15 +289,15 @@ var DataComponent = (function () {
     DataComponent.prototype.getData = function () {
         var _this = this;
         this.showTable = true;
-        if (!this.userControl.loggedIn) {
+        if (!this.userControl.loggedIn()) {
             return;
         }
         this.loading = true;
-        var url = '/data/' + this.userControl.username + '/' + this.timeFrame;
+        var url = '/data/' + this.userControl.getUsername() + '/' + this.timeFrame;
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.get(url, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -383,7 +383,7 @@ var DataComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.post('/update', toSend, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -401,7 +401,7 @@ var DataComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.post('/delete', toSend, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -542,7 +542,7 @@ var DataComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.post('/feed/update', toSend, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -560,7 +560,7 @@ var DataComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.post('/feed/delete', toSend, { headers: headers });
         response
             .map(function (n) { return n.json(); })
@@ -791,7 +791,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Login</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"text\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Login\" (click)=\"login()\">\n</div>"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\" (click)=\"this.error.display = false\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Login</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"password\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  <input type=\"button\" class=\"btn btn-block\" value=\"Login\" (click)=\"login()\">\n</div>"
 
 /***/ }),
 
@@ -849,10 +849,8 @@ var LoginComponent = (function () {
     // Handle new data response
     LoginComponent.prototype.newData = function (data) {
         if (data.success) {
-            this.userControl.loggedIn = true;
+            this.userControl.login(data.username, data.token);
             this.router.navigate(['/profile']);
-            this.userControl.username = data.username;
-            this.userControl.token = data.token;
         }
         else {
             this.error.message = data.message;
@@ -906,7 +904,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/navbar/navbar.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar navbar-default\">\n  <div class=\"container\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" [routerLink]=\"['/']\">Urban Farming Assistant</a>\n    </div>\n    <div id=\"navbar\" class=\"collapse navbar-collapse\">\n      <ul class=\"nav navbar-nav navbar-left\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/input']\">Input</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/data']\">Data</a></li>\n      </ul>\n\n      <!-- Show while logged in -->\n      <ul *ngIf=\"userControl.loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/profile']\">{{ userControl.username }}</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\" (click)=\"userControl.logout()\">Logout</a></li>\n      </ul>\n\n      <!-- Show while logged out -->\n      <ul *ngIf=\"!userControl.loggedIn\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/register']\">Register</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\">Login</a></li>\n      </ul>\n    </div><!--/.nav-collapse -->\n  </div>"
+module.exports = "<nav class=\"navbar navbar-default\">\n  <div class=\"container\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" [routerLink]=\"['/']\">Urban Farming Assistant</a>\n    </div>\n    <div id=\"navbar\" class=\"collapse navbar-collapse\">\n      <ul class=\"nav navbar-nav navbar-left\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/input']\">Input</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/data']\">Data</a></li>\n      </ul>\n\n      <!-- Show while logged in -->\n      <ul *ngIf=\"userControl.loggedIn()\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/profile']\">{{ userControl.getUsername() }}</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\" (click)=\"userControl.logout()\">Logout</a></li>\n      </ul>\n\n      <!-- Show while logged out -->\n      <ul *ngIf=\"!userControl.loggedIn()\" class=\"nav navbar-nav navbar-right\">\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/register']\">Register</a></li>\n        <li [routerLinkActive]=\"['active']\"><a [routerLink]=\"['/login']\">Login</a></li>\n      </ul>\n    </div><!--/.nav-collapse -->\n  </div>"
 
 /***/ }),
 
@@ -1038,7 +1036,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/components/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Create New Account</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  \n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"text\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  \n  <input type=\"button\" class=\"btn btn-block\" value=\"Register\" (click)=\"register()\">\n</div>\n"
+module.exports = "<div class=\"container\" style=\"max-width:500px\">\n  <div *ngIf=\"error.display\" class=\"alert alert-warning\">\n    <p>{{ error.message }}</p>\n  </div> \n\n  <h3>Create New Account</h3>\n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Username</span>\n    <input type=\"text\" [(ngModel)]=\"user.username\" class=\"form-control\">\n  </div>\n  <hr>\n\n  \n  <div class=\"input-group\">\n    <span class=\"input-group-addon\">Password</span>\n    <input type=\"password\" [(ngModel)]=\"user.password\" class=\"form-control\">\n  </div>\n  <hr>\n  \n  <input type=\"button\" class=\"btn btn-block\" value=\"Register\" (click)=\"register()\">\n</div>\n"
 
 /***/ }),
 
@@ -1096,10 +1094,8 @@ var RegisterComponent = (function () {
     // Handle new data response
     RegisterComponent.prototype.newData = function (data) {
         if (data.success) {
-            this.userControl.loggedIn = true;
+            this.userControl.login(data.username, data.token);
             this.router.navigate(['/profile']);
-            this.userControl.username = data.username;
-            this.userControl.token = data.token;
         }
         else {
             this.error.message = data.message;
@@ -1190,21 +1186,49 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var UserControlService = (function () {
     function UserControlService(router) {
         this.router = router;
-        this.loggedIn = false;
+        this.logged = false;
     }
+    UserControlService.prototype.loggedIn = function () {
+        if (localStorage.getItem('logged') == 'true') {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    UserControlService.prototype.login = function (username, token) {
+        localStorage.setItem('logged', 'true');
+        this.router.navigate(['/profile']);
+        this.setToken(token);
+        this.setUsername(username);
+    };
     UserControlService.prototype.logout = function () {
-        this.token = null;
+        localStorage.clear();
         this.username = null;
-        this.loggedIn = false;
+        this.token = null;
+        this.logged = false;
     };
     UserControlService.prototype.canActivate = function () {
-        if (this.loggedIn) {
+        if (this.loggedIn()) {
             return true;
         }
         else {
             this.router.navigate(['/login']);
             return false;
         }
+    };
+    UserControlService.prototype.getToken = function () {
+        return localStorage.getItem('token');
+    };
+    UserControlService.prototype.setToken = function (token) {
+        localStorage.setItem('token', token);
+    };
+    UserControlService.prototype.getUsername = function () {
+        return localStorage.getItem('username');
+    };
+    UserControlService.prototype.setUsername = function (username) {
+        localStorage.setItem('username', username);
+        this.username = username;
     };
     return UserControlService;
 }());
