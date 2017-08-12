@@ -659,9 +659,9 @@ var EntryformComponent = (function () {
         this.dataInfo.message = "Sending...";
         // Create and send post request
         var request = {
-            token: this.userControl.token,
+            token: this.userControl.getToken(),
             date: this.inputDate,
-            username: this.userControl.username,
+            username: this.userControl.getUsername(),
             feedValues: []
         };
         // Loop through each product
@@ -679,7 +679,7 @@ var EntryformComponent = (function () {
         // HTTP request
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
-        headers.append('JWT', this.userControl.token.toString());
+        headers.append('JWT', this.userControl.getToken());
         var response = this.http.post('/input', request, { headers: headers });
         response
             .map(function (n) { return n.json(); })

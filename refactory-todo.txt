@@ -10,3 +10,5 @@ Auto populate the data for the day in "input"
 "Keep me logged in"
 
 Make xAxis scale properly (skip a month? leave a gap. etc.)
+
+feed bought in bulk value 
